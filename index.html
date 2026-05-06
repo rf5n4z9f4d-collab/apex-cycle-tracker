@@ -775,7 +775,6 @@
             registerServiceWorker();
             console.log('%c🚀 Apex Gym Tracker v2.0 – Full Multi-Profile Edition Ready!', 'background:#10b981;color:#000;padding:4px 8px;border-radius:4px;font-weight:700');
             console.log('%c✅ Tap the profile avatar to switch or manage profiles. Everything is now fully customizable per profile.', 'color:#10b981');
-        };
         <script>
     // ... (keep all your existing code)
 
@@ -821,7 +820,37 @@
     renderAll = function() {
         originalRenderAll();
         renderSleepQuality();
+<script>
+    // ... keep all your existing code ...
+
+    // === LAST SAVED TIMESTAMP ===
+    function updateLastSaved() {
+        const header = document.querySelector('header') || document.querySelector('.sticky');
+        if (!header) return;
+
+        let savedEl = document.getElementById('last-saved');
+        if (!savedEl) {
+            savedEl = document.createElement('div');
+            savedEl.id = 'last-saved';
+            savedEl.className = 'text-[10px] text-emerald-400 text-center mt-1';
+            header.appendChild(savedEl);
+        }
+
+        const now = new Date();
+        savedEl.textContent = `Last saved: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+    }
+
+    // Auto-update last saved every time we save
+    const originalSaveData = saveData;
+    saveData = function() {
+        originalSaveData();
+        updateLastSaved();
     };
+
+    // Show it on load
+    window.addEventListener('load', () => {
+        setTimeout(updateLastSaved, 500);
+    });
 </script>
 </body>
 </html>
