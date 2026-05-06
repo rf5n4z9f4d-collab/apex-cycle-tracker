@@ -82,7 +82,26 @@
                 </div>
                 <div class="space-y-3" id="weekly-tasks"></div>
             </div>
+    <!-- PROFILE MODAL -->
+    <div onclick="if(event.target.id==='profile-modal-backdrop')hideProfileModal()" id="profile-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Manage Profiles</h2>
+            <div id="profile-list" class="space-y-2"></div>
+            <button onclick="createNewProfile()" class="mt-6 w-full h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ New Profile</button>
+        </div>
+    </div>
 
+    <!-- CYCLE START MODAL -->
+    <div onclick="if(event.target.id==='cycle-modal-backdrop')hideCycleModal()" id="cycle-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Set Cycle Start Date</h2>
+            <input type="date" id="cycle-start-input" class="w-full bg-white/10 rounded-3xl px-6 h-14 text-lg focus:outline-none">
+            <div class="mt-8 flex gap-3">
+                <button onclick="hideCycleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl font-medium">Cancel</button>
+                <button onclick="saveCycleStartDate()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">Save</button>
+            </div>
+        </div>
+    </div>
             <!-- Side Effects -->
             <div class="mt-8">
                 <div class="flex justify-between mb-3 px-1">
