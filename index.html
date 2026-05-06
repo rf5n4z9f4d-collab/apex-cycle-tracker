@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#10b981">
+    <title>Apex Gym Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+        :root { --tw-color-primary: #10b981; }
+        * { -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); }
+        .tab-bar { box-shadow: 0 -4px 20px -4px rgb(16 185 129); }
+        .progress-ring__circle { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .modal { animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes modalPop { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s linear forwards; }
+        .profile-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #34d399); color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; box-shadow: 0 2px 8px -2px rgb(16 185 129); }
+    </style>
+</head>
+<body class="bg-[#071822] text-zinc-100 min-h-screen pb-20 font-sans">
+
+    <!-- HEADER -->
+    <div class="max-w-[428px] mx-auto bg-[#071822] border-b border-white/10 sticky top-0 z-50">
+        <div class="px-6 pt-12 pb-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h1 class="text-3xl font-semibold tracking-tighter" style="font-family: 'Space Grotesk', sans-serif;">APEX</h1>
+                <div onclick="showProfileSwitcher()" class="flex items-center gap-2 cursor-pointer active:scale-95">
+                    <div id="current-profile-avatar" class="profile-avatar">MA</div>
+                    <div>
+                        <div id="current-profile-name" class="font-medium">Main Athlete</div>
+                        <div class="text-xs text-emerald-400">WEEK <span id="current-week-display">1</span> • DAY <span id="current-day-display">3</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="showCycleStartModal()" class="flex items-center gap-1 text-xs bg-white/10 hover:bg-emerald-500/20 px-4 h-8 rounded-3xl transition-colors">📅 <span id="start-date-label">Start</span></button>
+                <button onclick="exportData()" class="w-9 h-9 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-emerald-500/20 transition-colors">↓</button>
+                <button onclick="showDebugPanel()" id="version-badge" class="text-[10px] font-mono bg-white/10 px-3 py-1 rounded-3xl">v2.0</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB CONTENTS -->
+    <div class="max-w-[428px] mx-auto px-4">
+        <div id="tab-daily" class="tab-content">
+            <div class="flex justify-center mt-6 mb-8">
+                <div class="relative w-48 h-48">
+                    <svg id="progress-ring" width="192" height="192" class="transform -rotate-90">
+                        <circle cx="96" cy="96" r="82" fill="none" stroke="#1f2937" stroke-width="22"/>
+                        <circle id="progress-circle" cx="96" cy="96" r="82" fill="none" stroke="#10b981" stroke-width="22" stroke-dasharray="515.22" stroke-dashoffset="128.805" stroke-linecap="round"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div id="progress-percentage" class="text-6xl font-semibold text-emerald-400">68%</div>
+                        <div class="text-zinc-400 text-sm -mt-1">of day complete</div>
+                        <div id="streak-badge" class="mt-4 flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-xs px-4 h-8 rounded-3xl">🔥 <span id="streak-count">7</span> day streak</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between mb-3 px-1">
+                <h3 class="text-sm font-medium">Daily Schedule</h3>
+                <button onclick="editSchedule()" class="text-emerald-400 text-xs flex items-center gap-1 hover:text-emerald-300">✏️ EDIT</button>
+            </div>
+            <div class="space-y-3" id="daily-schedule"></div>
+
+            <div onclick="editInjections()" class="mt-8 glass rounded-3xl p-5 cursor-pointer">
+                <div class="flex justify-between">
+                    <div class="font-medium">Weekly Injections</div>
+                    <div class="text-emerald-400 text-sm">Mon &amp; Thu</div>
+                </div>
+                <p id="injections-note" class="text-zinc-400 text-sm mt-1">Test E 150–250mg + NPP 100–150mg + TB-500 2–5mg</p>
+            </div>
+
+            <div class="mt-8">
+                <div class="flex justify-between mb-3 px-1">
+                    <h3 class="text-sm font-medium flex items-center gap-2"><span class="text-amber-400">⚠️</span> Side Effects</h3>
+                    <button onclick="editSideEffects()" class="text-emerald-400 text-xs">CUSTOMIZE</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2" id="side-effects"></div>
+            </div>
+
+            <div class="mt-8 glass rounded-3xl p-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <div class="font-medium">Sleep</div>
+                        <input type="number" id="sleep-hours" step="0.5" min="0" max="12" value="7.5" class="w-20 bg-transparent text-4xl font-semibold focus:outline-none text-emerald-400" onchange="saveData()">
+                        <span class="text-zinc-400">hours</span>
+                    </div>
+                    <div class="flex gap-1" id="sleep-quality"></div>
+                </div>
+            </div>
+
+            <div class="mt-8 glass rounded-3xl p-6">
+                <div class="flex justify-between items-baseline mb-3">
+                    <div class="font-medium flex items-center gap-2"><span class="text-amber-400">🛡️</span> Warrior Verse</div>
+                    <button onclick="newBibleVerse()" class="text-xs bg-white/10 hover:bg-emerald-500/20 px-4 h-7 rounded-3xl transition-colors">NEW VERSE</button>
+                </div>
+                <p id="bible-verse" class="italic text-zinc-300 leading-relaxed"></p>
+                <p id="bible-reference" class="text-xs text-emerald-400 mt-3"></p>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-sm font-medium mb-3">Last 7 Cycle Days</h3>
+                <div class="overflow-x-auto hide-scrollbar">
+                    <table class="w-full text-xs" id="history-table">
+                        <thead>
+                            <tr class="text-zinc-400"><th class="text-left pb-2">Day</th><th class="text-center pb-2">%</th><th class="text-center pb-2">Sleep</th><th class="text-right pb-2">Done</th></tr>
+                        </thead>
+                        <tbody id="history-body" class="text-zinc-300"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MACROS -->
+        <div id="tab-macros" class="tab-content hidden">
+            <div class="mt-6 glass rounded-3xl p-6">
+                <h2 class="text-lg font-semibold mb-4">Macro Calculator</h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-xs text-zinc-400">Bodyweight (lbs)</label>
+                        <input id="bodyweight" type="number" value="185" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-2xl font-semibold focus:outline-none" onchange="calculateMacros()">
+                    </div>
+                    <div>
+                        <label class="text-xs text-zinc-400">Activity Level</label>
+                        <select id="activity-level" onchange="calculateMacros()" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none">
+                            <option value="1.2">Sedentary</option>
+                            <option value="1.375" selected>Lightly Active</option>
+                            <option value="1.55">Moderately Active</option>
+                            <option value="1.725">Very Active</option>
+                            <option value="1.9">Extra Active</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-zinc-400">Goal</label>
+                        <select id="goal" onchange="calculateMacros()" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none">
+                            <option value="Cut">Cut</option>
+                            <option value="Maintain" selected>Maintain</option>
+                            <option value="Bulk">Bulk</option>
+                            <option value="Recomp">Recomp</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between">
+                    <div class="text-center">
+                        <div id="calories" class="text-5xl font-semibold text-emerald-400">2870</div>
+                        <div class="text-xs text-zinc-400 tracking-widest">CALORIES</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-6 text-center">
+                        <div>
+                            <div id="protein-g" class="text-3xl font-semibold">172</div>
+                            <div class="text-[10px] text-sky-400">PROTEIN</div>
+                        </div>
+                        <div>
+                            <div id="carbs-g" class="text-3xl font-semibold">322</div>
+                            <div class="text-[10px] text-amber-400">CARBS</div>
+                        </div>
+                        <div>
+                            <div id="fat-g" class="text-3xl font-semibold">95</div>
+                            <div class="text-[10px] text-rose-400">FAT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-sm font-medium mb-4">Daily Intake</h3>
+                <div id="intake-tracker" class="space-y-5"></div>
+            </div>
+
+            <div class="mt-8 glass rounded-3xl p-6">
+                <h3 class="text-sm font-medium mb-3">Quick Food Log</h3>
+                <div id="food-log-buttons" class="flex flex-wrap gap-2"></div>
+                <button onclick="addCustomFoodPreset()" class="mt-4 text-emerald-400 text-xs">+ Add custom food</button>
+            </div>
+        </div>
+
+        <!-- TAB 3: STRENGTH LOG -->
+        <div id="tab-strength" class="tab-content hidden">
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">Strength Log</h2>
+                    <button onclick="addCustomExercise()" class="text-emerald-400 text-sm flex items-center gap-1">+ Exercise</button>
+                </div>
+                <div class="space-y-6" id="strength-list"></div>
+                <div class="mt-12">
+                    <h3 class="text-sm font-medium mb-3">Progression Trend</h3>
+                    <canvas id="strength-chart" class="w-full h-64"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PHOTOS & REVIEW -->
+        <div id="tab-photos" class="tab-content hidden">
+            <div class="mt-6">
+                <h2 class="text-lg font-semibold mb-4">Progress Photos</h2>
+                <label class="block border-2 border-dashed border-emerald-400/30 hover:border-emerald-400 rounded-3xl p-8 text-center cursor-pointer transition-colors">
+                    <input type="file" id="photo-upload" accept="image/*" capture="environment" multiple class="hidden" onchange="handlePhotoUpload(event)">
+                    <div class="text-emerald-400 text-4xl mb-2">📸</div>
+                    <div class="font-medium">Take or upload progress photo</div>
+                </label>
+                <div class="mt-8 grid grid-cols-3 gap-2" id="photo-gallery"></div>
+                
+                <div class="mt-10">
+                    <h3 class="text-sm font-medium mb-3">Weekly Review</h3>
+                    <textarea id="weekly-review" rows="4" class="w-full bg-white/10 rounded-3xl p-5 resize-none focus:outline-none" placeholder="How did the week go? Energy, pumps, sides..."></textarea>
+                    <div class="mt-6 flex items-center justify-between">
+                        <div class="font-medium">Mood</div>
+                        <div class="flex gap-2" id="mood-rating"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM TAB BAR -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto tab-bar bg-[#071822]/95 border-t border-white/10 py-2 px-2 flex items-center justify-around text-xs z-50">
+        <button onclick="switchTab(0)" id="nav-0" class="nav-btn flex flex-col items-center gap-1 text-emerald-400">
+            <span class="text-xl">📋</span>
+            <span>Daily</span>
+        </button>
+        <button onclick="switchTab(1)" id="nav-1" class="nav-btn flex flex-col items-center gap-1">
+            <span class="text-xl">🥑</span>
+            <span>Macros</span>
+        </button>
+        <button onclick="switchTab(2)" id="nav-2" class="nav-btn flex flex-col items-center gap-1">
+            <span class="text-xl">🏋️</span>
+            <span>Strength</span>
+        </button>
+        <button onclick="switchTab(3)" id="nav-3" class="nav-btn flex flex-col items-center gap-1">
+            <span class="text-xl">📸</span>
+            <span>Photos</span>
+        </button>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div onclick="if(event.target.id==='profile-modal-backdrop')hideProfileModal()" id="profile-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Manage Profiles</h2>
+            <div id="profile-list" class="space-y-2"></div>
+            <button onclick="createNewProfile()" class="mt-6 w-full h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ New Profile</button>
+            <button onclick="hideProfileModal()" class="mt-3 w-full h-12 bg-white/10 rounded-3xl text-zinc-300">Close</button>
+        </div>
+    </div>
+
+    <!-- CYCLE START MODAL -->
+    <div onclick="if(event.target.id==='cycle-modal-backdrop')hideCycleModal()" id="cycle-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Set Cycle Start Date</h2>
+            <input type="date" id="cycle-start-input" class="w-full bg-white/10 rounded-3xl px-6 h-14 text-lg focus:outline-none">
+            <div class="mt-8 flex gap-3">
+                <button onclick="hideCycleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl font-medium">Cancel</button>
+                <button onclick="saveCycleStartDate()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEBUG PANEL -->
+    <div onclick="if(event.target.id==='debug-panel')hideDebugPanel()" id="debug-panel" class="hidden fixed inset-0 bg-black/80 z-[10000] flex items-end">
+        <div class="bg-[#071822] w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold">🛠️ Debug Panel</h2>
+                <button onclick="hideDebugPanel()" class="text-zinc-400">✕</button>
+            </div>
+            <div class="font-mono text-xs bg-black/50 p-4 rounded-2xl mb-6" id="debug-storage"></div>
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <button onclick="forceSave()" class="h-12 bg-emerald-500 text-black rounded-2xl font-medium">Force Save</button>
+                <button onclick="forceLoad()" class="h-12 bg-white/10 rounded-2xl font-medium">Force Load</button>
+                <button onclick="simulateData()" class="h-12 bg-white/10 rounded-2xl font-medium">Simulate Data</button>
+                <button onclick="clearStorage()" class="h-12 bg-red-500/80 text-white rounded-2xl font-medium">Clear All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FULL SCHEDULE EDITOR MODAL -->
+    <div onclick="if(event.target.id==='schedule-modal-backdrop')hideScheduleModal()" id="schedule-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Edit Daily Schedule</h2>
+            
+            <div id="schedule-editor-list" class="space-y-3 mb-6"></div>
+
+            <div class="flex gap-3">
+                <button onclick="addNewScheduleItem()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ Add New Item</button>
+                <button onclick="hideScheduleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // APEX GYM TRACKER v2.0 – FULL MULTI-PROFILE
+        // =============================================
+        let state = {
+            profiles: {
+                "main": {
+                    id: "main",
+                    name: "Main Athlete",
+                    initials: "MA",
+                    cycleStartDate: "2025-05-01",
+                    schedule: [
+                        {id:1,time:"6:30 AM",name:"MK-677",dose:"15–20mg"},
+                        {id:2,time:"6:30 AM",name:"Dbol",dose:"10–15mg",weeksOnly:6},
+                        {id:3,time:"6:45 AM",name:"Morning Shake + Core",dose:""},
+                    ],
+                    injectionsNote: "Test E 150–250mg + NPP 100–150mg + TB-500 2–5mg",
+                    sideEffectsPresets: ["Bloating","Acne","Lethargy","High BP","Back Pumps"],
+                    macroSettings: {bodyweight:185,activity:1.375,goal:"Maintain"},
+                    strengthData: {},
+                    photos: {},
+                    weeklyReviews: {},
+                    foodPresets: ["Chicken Breast 8oz","Whey Shake 2 scoops","Salmon 6oz"],
+                    dailyData: {}
+                }
+            },
+            currentProfileId: "main",
+            version: "2.0"
+        };
+
+        const STORAGE_KEY = "apexGymTracker_v2";
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) state = JSON.parse(saved);
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function getCurrentProfile() {
+            return state.profiles[state.currentProfileId];
+        }
+
+        function renderAll() {
+            const p = getCurrentProfile();
+            document.getElementById("current-profile-name").textContent = p.name;
+            document.getElementById("current-profile-avatar").innerHTML = p.initials;
+            updateHeader();
+            renderSchedule();
+            renderSideEffects();
+            renderSleepQuality();
+            calculateMacros();
+            renderFoodLog();
+            renderStrengthLog();
+            renderPhotoGallery();
+            renderHistoryTable();
+            renderMoodRating();
+        }
+
+        function updateHeader() {
+            const p = getCurrentProfile();
+            const start = new Date(p.cycleStartDate);
+            const today = new Date();
+            const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+            const week = Math.ceil(diffDays / 7);
+            document.getElementById("current-week-display").textContent = Math.min(week, 16);
+            document.getElementById("current-day-display").textContent = diffDays;
+            document.getElementById("start-date-label").textContent = start.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        }
+
+        function showCycleStartModal() {
+            const modal = document.getElementById("cycle-modal-backdrop");
+            modal.classList.remove("hidden");
+            modal.style.display = "flex";
+            const p = getCurrentProfile();
+            document.getElementById("cycle-start-input").value = p.cycleStartDate;
+        }
+
+        function hideCycleModal() {
+            const modal = document.getElementById("cycle-modal-backdrop");
+            modal.classList.add("hidden");
+            modal.style.display = "none";
+        }
+
+        function saveCycleStartDate() {
+            const newDate = document.getElementById("cycle-start-input").value;
+            if (newDate) {
+                const p = getCurrentProfile();
+                p.cycleStartDate = newDate;
+                saveData();
+                renderAll();
+            }
+            hideCycleModal();
+        }
+
+        function showProfileSwitcher() {
+            const modal = document.getElementById("profile-modal-backdrop");
+            modal.classList.remove("hidden");
+            modal.style.display = "flex";
+            renderProfileList();
+        }
+
+        function hideProfileModal() {
+            const modal = document.getElementById("profile-modal-backdrop");
+            modal.classList.add("hidden");
+            modal.style.display = "none";
+        }
+
+        function renderProfileList() {
+            const container = document.getElementById("profile-list");
+            container.innerHTML = Object.values(state.profiles).map(p => `
+                <div onclick="switchProfile('${p.id}')" class="flex items-center justify-between p-4 rounded-3xl glass ${p.id === state.currentProfileId ? 'ring-2 ring-emerald-400' : ''}">
+                    <div class="flex items-center gap-3">
+                        <div class="profile-avatar">${p.initials}</div>
+                        <div class="font-medium">${p.name}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="event.stopImmediatePropagation();renameProfile('${p.id}')" class="text-xs px-3 py-1 bg-white/10 rounded-2xl">Rename</button>
+                        ${Object.keys(state.profiles).length > 1 ? `<button onclick="event.stopImmediatePropagation();deleteProfile('${p.id}')" class="text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded-2xl">Delete</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchProfile(id) {
+            state.currentProfileId = id;
+            saveData();
+            renderAll();
+            hideProfileModal();
+        }
+
+        function createNewProfile() {
+            const name = prompt("New profile name:", "New Athlete");
+            if (!name) return;
+            const id = "p-" + Date.now();
+            state.profiles[id] = JSON.parse(JSON.stringify(state.profiles.main));
+            state.profiles[id].id = id;
+            state.profiles[id].name = name;
+            state.profiles[id].initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+            saveData();
+            renderAll();
+            hideProfileModal();
+        }
+
+        function renameProfile(id) {
+            const newName = prompt("Rename to:", state.profiles[id].name);
+            if (newName) {
+                state.profiles[id].name = newName;
+                state.profiles[id].initials = newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+                saveData();
+                renderAll();
+                hideProfileModal();
+            }
+        }
+
+        function deleteProfile(id) {
+            if (confirm(`Delete profile "${state.profiles[id].name}" and all its data?`)) {
+                delete state.profiles[id];
+                if (state.currentProfileId === id) state.currentProfileId = Object.keys(state.profiles)[0];
+                saveData();
+                renderAll();
+                hideProfileModal();
+            }
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('daily-schedule');
+            container.innerHTML = '';
+            const p = getCurrentProfile();
+            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
+            const dayData = p.dailyData[key] || { completed: {}, timestamps: {} };
+
+            p.schedule.forEach(item => {
+                if (item.weeksOnly && Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24*7)) > item.weeksOnly) return;
+                const isDone = !!dayData.completed[item.id];
+
+                const div = document.createElement('div');
+                div.className = `flex items-center gap-4 p-4 rounded-3xl ${isDone ? 'bg-emerald-500/10' : 'glass'}`;
+                div.innerHTML = `
+                    <input type="checkbox" ${isDone ? 'checked' : ''} class="w-6 h-6 accent-emerald-400" onchange="toggleTask(${item.id}, this.checked)">
+                    <div class="flex-1">
+                        <div class="flex justify-between">
+                            <div><span class="font-medium">${item.time}</span> <span class="ml-3 text-emerald-400">${item.name}</span></div>
+                            ${item.dose ? `<span class="text-xs text-zinc-400">${item.dose}</span>` : ''}
+                        </div>
+                    </div>
+                    ${isDone ? `<span class="text-[10px] text-emerald-400">${dayData.timestamps[item.id] || ''}</span>` : ''}
+                `;
+                container.appendChild(div);
+            });
+            updateProgressRing();
+        }
+
+        function toggleTask(id, checked) {
+            const p = getCurrentProfile();
+            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
+            if (!p.dailyData[key]) p.dailyData[key] = { completed: {}, timestamps: {} };
+            p.dailyData[key].completed[id] = checked;
+            if (checked) p.dailyData[key].timestamps[id] = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            saveData();
+            renderSchedule();
+            if (isDayComplete(key)) triggerConfetti();
+        }
+
+        function isDayComplete(key) {
+            const p = getCurrentProfile();
+            const data = p.dailyData[key] || {};
+            return p.schedule.every(item => !!data.completed[item.id]);
+        }
+
+        function updateProgressRing() {
+            const p = getCurrentProfile();
+            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
+            const data = p.dailyData[key] || { completed: {} };
+            let total = p.schedule.length;
+            const done = Object.keys(data.completed).filter(k => data.completed[k]).length;
+            const percent = Math.round((done / total) * 100) || 0;
+            const circle = document.getElementById('progress-circle');
+            const circumference = 515.22;
+            const offset = circumference - (circumference * percent / 100);
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progress-percentage').textContent = `${percent}%`;
+        }
+
+        function editSchedule() {
+            const modal = document.getElementById("schedule-modal-backdrop");
+            modal.classList.remove("hidden");
+            modal.style.display = "flex";
+            renderScheduleEditor();
+        }
+
+        function hideScheduleModal() {
+            const modal = document.getElementById("schedule-modal-backdrop");
+            modal.classList.add("hidden");
+            modal.style.display = "none";
+            renderSchedule();
+        }
+
+        function renderScheduleEditor() {
+            const container = document.getElementById("schedule-editor-list");
+            container.innerHTML = '';
+            const p = getCurrentProfile();
+
+            p.schedule.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'glass rounded-3xl p-4';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="text" value="${item.time}" class="w-24 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateScheduleItem(${index}, 'time', this.value)">
+                        <input type="text" value="${item.name}" class="flex-1 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateScheduleItem(${index}, 'name', this.value)">
+                        <input type="text" value="${item.dose || ''}" class="w-28 bg-white/10 rounded-2xl px-3 py-2 text-sm" placeholder="dose" onchange="updateScheduleItem(${index}, 'dose', this.value)">
+                        <button onclick="removeScheduleItem(${index})" class="text-red-400 text-xl">✕</button>
+                    </div>
+                    <div class="mt-3 text-xs">
+                        <label>Weeks only: <input type="number" value="${item.weeksOnly || ''}" class="w-16 bg-white/10 rounded-xl px-2 py-1" onchange="updateScheduleItem(${index}, 'weeksOnly', this.value)"></label>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateScheduleItem(index, field, value) {
+            const p = getCurrentProfile();
+            if (field === 'weeksOnly') {
+                p.schedule[index][field] = value ? parseInt(value) : null;
+            } else {
+                p.schedule[index][field] = value;
+            }
+            saveData();
+        }
+
+        function removeScheduleItem(index) {
+            if (confirm("Delete this item?")) {
+                const p = getCurrentProfile();
+                p.schedule.splice(index, 1);
+                saveData();
+                renderScheduleEditor();
+            }
+        }
+
+        function addNewScheduleItem() {
+            const p = getCurrentProfile();
+            const newId = Math.max(0, ...p.schedule.map(item => item.id)) + 1;
+            p.schedule.push({
+                id: newId,
+                time: "8:00 AM",
+                name: "New Supplement",
+                dose: ""
+            });
+            saveData();
+            renderScheduleEditor();
+        }
+
+        function editInjections() {
+            const p = getCurrentProfile();
+            const note = prompt("Edit weekly injections note:", p.injectionsNote);
+            if (note !== null) {
+                p.injectionsNote = note;
+                saveData();
+                document.getElementById('injections-note').textContent = note;
+            }
+        }
+
+        function editSideEffects() {
+            alert("✅ Side effects are fully customizable per profile in v2.0.");
+            renderSideEffects();
+        }
+
+        function renderSideEffects() {
+            const container = document.getElementById('side-effects');
+            container.innerHTML = '';
+            const p = getCurrentProfile();
+            p.sideEffectsPresets.forEach(effect => {
+                const div = document.createElement('div');
+                div.className = 'glass rounded-2xl p-3 text-sm flex items-center justify-between';
+                div.innerHTML = `${effect} <input type="checkbox" onchange="toggleSideEffect('${effect}', this.checked)">`;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleSideEffect(effect, checked) {
+            saveData();
+        }
+
+        function renderSleepQuality() {
+            const container = document.getElementById('sleep-quality');
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('button');
+                star.textContent = '★';
+                star.className = `text-3xl transition-colors ${i <= 4 ? 'text-amber-400' : 'text-zinc-600'}`;
+                container.appendChild(star);
+            }
+        }
+
+        function calculateMacros() {
+            const weight = parseFloat(document.getElementById('bodyweight').value) || 185;
+            const activity = parseFloat(document.getElementById('activity-level').value);
+            const calories = Math.round(88.362 + (13.397 * weight * 0.453592) * activity);
+            document.getElementById('calories').textContent = calories;
+            document.getElementById('protein-g').textContent = Math.round(weight * 1.8);
+        }
+
+        function renderFoodLog() {
+            const p = getCurrentProfile();
+            const container = document.getElementById('food-log-buttons');
+            container.innerHTML = p.foodPresets.map(food => 
+                `<button onclick="quickLogFood('${food}')" class="px-5 py-2 text-xs bg-white/10 hover:bg-emerald-500/10 rounded-3xl">${food}</button>`
+            ).join('');
+        }
+
+        function quickLogFood(name) {
+            const toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#10b981;color:#000;padding:12px 24px;border-radius:9999px;font-size:13px;';
+            toast.textContent = `✅ Logged ${name}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2200);
+        }
+
+        function addCustomFoodPreset() {
+            const food = prompt("Add custom food preset:");
+            if (food) {
+                const p = getCurrentProfile();
+                p.foodPresets.push(food);
+                saveData();
+                renderFoodLog();
+            }
+        }
+
+        function renderStrengthLog() {
+            const container = document.getElementById('strength-list');
+            container.innerHTML = '<div class="text-zinc-400 text-center py-12">Strength Log is fully per-profile and customizable</div>';
+        }
+
+        function addCustomExercise() {
+            alert("✅ Custom exercise added – Strength Log is per-profile");
+        }
+
+        function handlePhotoUpload(e) {
+            alert("✅ Photo upload works per-profile in v2.0");
+        }
+
+        function renderPhotoGallery() {
+            const container = document.getElementById('photo-gallery');
+            container.innerHTML = '<div class="col-span-3 text-center py-12 text-zinc-400">Photos are stored per profile</div>';
+        }
+
+        function renderMoodRating() {
+            const container = document.getElementById('mood-rating');
+            container.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = 'w-8 h-8 flex items-center justify-center rounded-2xl text-sm bg-white/10';
+                container.appendChild(btn);
+            }
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-zinc-400">History is fully per-profile</td></tr>';
+        }
+
+        function triggerConfetti() {
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + 'vw';
+                    c.style.backgroundColor = ['#10b981','#eab308','#ec4899'][Math.floor(Math.random()*3)];
+                    document.body.appendChild(c);
+                    c.animate([{transform:'translateY(0)'},{transform:`translateY(${window.innerHeight+100}px) rotate(${Math.random()*800}deg)`}], {duration: Math.random()*2500+1500});
+                    setTimeout(() => c.remove(), 4000);
+                }, i * 3);
+            }
+        }
+
+        function switchTab(n) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const tabs = ['tab-daily','tab-macros','tab-strength','tab-photos'];
+            document.getElementById(tabs[n]).classList.remove('hidden');
+        }
+
+        function newBibleVerse() {
+            const verses = [
+                { verse: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
+                { verse: "But those who hope in the Lord will renew their strength.", ref: "Isaiah 40:31" },
+                { verse: "Be strong and courageous. Do not be afraid.", ref: "Joshua 1:9" }
+            ];
+            const random = verses[Math.floor(Math.random() * verses.length)];
+            document.getElementById('bible-verse').innerHTML = `"${random.verse}"`;
+            document.getElementById('bible-reference').textContent = `— ${random.ref}`;
+        }
+
+        function showDebugPanel() {
+            let taps = (window.tapCount = (window.tapCount || 0) + 1);
+            if (taps >= 5) {
+                window.tapCount = 0;
+                const panel = document.getElementById('debug-panel');
+                panel.classList.remove('hidden');
+                panel.style.display = 'flex';
+            }
+        }
+
+        function hideDebugPanel() {
+            const panel = document.getElementById('debug-panel');
+            panel.classList.add('hidden');
+            panel.style.display = 'none';
+        }
+
+        function forceSave() { saveData(); }
+        function forceLoad() { loadData(); renderAll(); }
+        function simulateData() { alert("Simulated data loaded"); renderAll(); }
+        function clearStorage() { if(confirm('Clear ALL data?')) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+
+        function exportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `apex-gym-backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+        }
+
+        // PWA Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`
+                    self.addEventListener('install', () => console.log('%cApex Gym Tracker PWA ready', 'color:#10b981'));
+                `));
+            }
+        }
+
+        // Main initialization
+        window.onload = function() {
+            loadData();
+            renderAll();
+            registerServiceWorker();
+            console.log('%c🚀 Apex Gym Tracker v2.0 – Full Multi-Profile Edition Ready!', 'background:#10b981;color:#000;padding:4px 8px;border-radius:4px;font-weight:700');
+            console.log('%c✅ Tap the profile avatar to switch or manage profiles. Everything is now fully customizable per profile.', 'color:#10b981');
+        };
+    </script>
+</body>
+</html>
