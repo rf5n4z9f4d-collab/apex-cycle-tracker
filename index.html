@@ -698,6 +698,90 @@
             console.log('%c🚀 Apex Gym Tracker v2.0 – Full Multi-Profile Edition Ready!', 'background:#10b981;color:#000;padding:4px 8px;border-radius:4px;font-weight:700');
             console.log('%c✅ Tap the profile avatar to switch or manage profiles. Everything is now fully customizable per profile.', 'color:#10b981');
         };
+            <!-- FULL SCHEDULE EDITOR MODAL -->
+    <div onclick="if(event.target.id==='schedule-modal-backdrop')hideScheduleModal()" id="schedule-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Edit Daily Schedule</h2>
+            
+            <div id="schedule-editor-list" class="space-y-3 mb-6"></div>
+
+            <div class="flex gap-3">
+                <button onclick="addNewScheduleItem()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ Add New Item</button>
+                <button onclick="hideScheduleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================== SCHEDULE EDITOR FUNCTIONS ======================
+        function editSchedule() {
+            const modal = document.getElementById("schedule-modal-backdrop");
+            modal.classList.remove("hidden");
+            modal.style.display = "flex";
+            renderScheduleEditor();
+        }
+
+        function hideScheduleModal() {
+            const modal = document.getElementById("schedule-modal-backdrop");
+            modal.classList.add("hidden");
+            modal.style.display = "none";
+            renderSchedule(); // refresh main view
+        }
+
+        function renderScheduleEditor() {
+            const container = document.getElementById("schedule-editor-list");
+            container.innerHTML = '';
+            const p = getCurrentProfile();
+
+            p.schedule.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'glass rounded-3xl p-4';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="text" value="${item.time}" class="w-24 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateScheduleItem(${index}, 'time', this.value)">
+                        <input type="text" value="${item.name}" class="flex-1 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateScheduleItem(${index}, 'name', this.value)">
+                        <input type="text" value="${item.dose || ''}" class="w-28 bg-white/10 rounded-2xl px-3 py-2 text-sm" placeholder="dose" onchange="updateScheduleItem(${index}, 'dose', this.value)">
+                        <button onclick="removeScheduleItem(${index})" class="text-red-400 text-xl">✕</button>
+                    </div>
+                    <div class="mt-3 text-xs">
+                        <label>Weeks only: <input type="number" value="${item.weeksOnly || ''}" class="w-16 bg-white/10 rounded-xl px-2 py-1" onchange="updateScheduleItem(${index}, 'weeksOnly', this.value)"></label>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateScheduleItem(index, field, value) {
+            const p = getCurrentProfile();
+            if (field === 'weeksOnly') {
+                p.schedule[index][field] = value ? parseInt(value) : null;
+            } else {
+                p.schedule[index][field] = value;
+            }
+            saveData();
+        }
+
+        function removeScheduleItem(index) {
+            if (confirm("Delete this item?")) {
+                const p = getCurrentProfile();
+                p.schedule.splice(index, 1);
+                saveData();
+                renderScheduleEditor();
+            }
+        }
+
+        function addNewScheduleItem() {
+            const p = getCurrentProfile();
+            const newId = Math.max(0, ...p.schedule.map(item => item.id)) + 1;
+            p.schedule.push({
+                id: newId,
+                time: "8:00 AM",
+                name: "New Supplement",
+                dose: ""
+            });
+            saveData();
+            renderScheduleEditor();
+        }
     </script>
 </body>
 </html>
