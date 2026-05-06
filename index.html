@@ -776,6 +776,52 @@
             console.log('%c🚀 Apex Gym Tracker v2.0 – Full Multi-Profile Edition Ready!', 'background:#10b981;color:#000;padding:4px 8px;border-radius:4px;font-weight:700');
             console.log('%c✅ Tap the profile avatar to switch or manage profiles. Everything is now fully customizable per profile.', 'color:#10b981');
         };
-    </script>
+        <script>
+    // ... (keep all your existing code)
+
+    // FIX: Make sleep stars clickable
+    function renderSleepQuality() {
+        const container = document.getElementById('sleep-quality');
+        container.innerHTML = '';
+        const p = getCurrentProfile();
+        let currentRating = p.sleepRating || 4;
+
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('button');
+            star.textContent = '★';
+            star.className = `text-3xl transition-colors ${i <= currentRating ? 'text-amber-400' : 'text-zinc-600'}`;
+            star.onclick = () => {
+                p.sleepRating = i;
+                saveData();
+                renderSleepQuality();
+            };
+            container.appendChild(star);
+        }
+    }
+
+    // FIX: Make CUSTOMIZE side effects actually work
+    function editSideEffects() {
+        const p = getCurrentProfile();
+        const newEffect = prompt("Add new side effect (or type existing one to remove):");
+        if (!newEffect) return;
+
+        if (p.sideEffectsPresets.includes(newEffect)) {
+            // Remove it
+            p.sideEffectsPresets = p.sideEffectsPresets.filter(e => e !== newEffect);
+        } else {
+            // Add it
+            p.sideEffectsPresets.push(newEffect);
+        }
+        saveData();
+        renderSideEffects();
+    }
+
+    // Make sure renderAll calls the fixed functions
+    const originalRenderAll = renderAll;
+    renderAll = function() {
+        originalRenderAll();
+        renderSleepQuality();
+    };
+</script>
 </body>
 </html>
