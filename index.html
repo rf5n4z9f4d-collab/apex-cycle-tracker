@@ -894,7 +894,104 @@
         function showAccountOptions() {
             alert("Account options coming soon in next update!");
         }
+        // =============================================
+        // MISSING FUNCTIONS - ADD THESE
+        // =============================================
 
+        function showProfileSwitcher() {
+            const modal = document.getElementById("profile-modal-backdrop");
+            modal.classList.remove("hidden");
+            modal.style.display = "flex";
+            renderProfileList();
+        }
+
+        function hideProfileModal() {
+            const modal = document.getElementById("profile-modal-backdrop");
+            modal.classList.add("hidden");
+            modal.style.display = "none";
+        }
+
+        function renderProfileList() {
+            const container = document.getElementById("profile-list");
+            container.innerHTML = Object.values(state.profiles).map(p => `
+                <div onclick="switchProfile('${p.id}')" class="flex items-center justify-between p-4 rounded-3xl glass ${p.id === state.currentProfileId ? 'ring-2 ring-emerald-400' : ''}">
+                    <div class="flex items-center gap-3">
+                        <div class="profile-avatar">${p.initials}</div>
+                        <div class="font-medium">${p.name}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="event.stopImmediatePropagation();renameProfile('${p.id}')" class="text-xs px-3 py-1 bg-white/10 rounded-2xl">Rename</button>
+                        ${Object.keys(state.profiles).length > 1 ? `<button onclick="event.stopImmediatePropagation();deleteProfile('${p.id}')" class="text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded-2xl">Delete</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchProfile(id) {
+            state.currentProfileId = id;
+            saveData();
+            renderAll();
+            hideProfileModal();
+        }
+
+        function createNewProfile() {
+            const name = prompt("New profile name:", "New Athlete");
+            if (!name) return;
+            const id = "p-" + Date.now();
+            state.profiles[id] = JSON.parse(JSON.stringify(state.profiles.main));
+            state.profiles[id].id = id;
+            state.profiles[id].name = name;
+            state.profiles[id].initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+            saveData();
+            renderAll();
+            hideProfileModal();
+        }
+
+        function renameProfile(id) {
+            const newName = prompt("Rename to:", state.profiles[id].name);
+            if (newName) {
+                state.profiles[id].name = newName;
+                state.profiles[id].initials = newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+                saveData();
+                renderAll();
+                hideProfileModal();
+            }
+        }
+
+        function deleteProfile(id) {
+            if (confirm(`Delete profile "${state.profiles[id].name}" and all its data?`)) {
+                delete state.profiles[id];
+                if (state.currentProfileId === id) state.currentProfileId = Object.keys(state.profiles)[0];
+                saveData();
+                renderAll();
+                hideProfileModal();
+            }
+        }
+
+        function showCycleStartModal() {
+            const modal = document.getElementById("cycle-modal-backdrop");
+            modal.classList.remove("hidden");
+            modal.style.display = "flex";
+            const p = getCurrentProfile();
+            document.getElementById("cycle-start-input").value = p.cycleStartDate || "2025-05-01";
+        }
+
+        function hideCycleModal() {
+            const modal = document.getElementById("cycle-modal-backdrop");
+            modal.classList.add("hidden");
+            modal.style.display = "none";
+        }
+
+        function saveCycleStartDate() {
+            const newDate = document.getElementById("cycle-start-input").value;
+            if (newDate) {
+                const p = getCurrentProfile();
+                p.cycleStartDate = newDate;
+                saveData();
+                renderAll();
+            }
+            hideCycleModal();
+        }
         // Main initialization
         window.onload = function() {
             loadData();
