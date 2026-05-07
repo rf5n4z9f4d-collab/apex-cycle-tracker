@@ -23,6 +23,7 @@
         .bubble-btn:active { transform: scale(0.95); }
         .refresh-spin { animation: spin 0.6s linear; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-[#071822] text-zinc-100 min-h-screen pb-20 font-sans">
@@ -98,7 +99,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <div class="font-medium">Sleep</div>
-                        <input type="number" id="sleep-hours" step="0.5" min="0" max="12" value="7.5" class="w-20 bg-transparent text-4xl font-semibold focus:outline-none text-emerald-400" onchange="saveData()">
+                        <input type="number" id="sleep-hours" step="0.5" min="0" max="12" value="7.5" class="w-20 bg-transparent text-4xl font-semibold focus:outline-none text-emerald-400" onchange="saveSleep()">
                         <span class="text-zinc-400">hours</span>
                     </div>
                     <div class="flex gap-1" id="sleep-quality"></div>
@@ -136,11 +137,11 @@
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="text-xs text-zinc-400">Bodyweight (lbs)</label>
-                        <input id="bodyweight" type="number" value="185" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-2xl font-semibold focus:outline-none">
+                        <input id="bodyweight" type="number" value="185" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-2xl font-semibold focus:outline-none" onchange="calculateMacros()">
                     </div>
                     <div>
                         <label class="text-xs text-zinc-400">Activity Level</label>
-                        <select id="activity-level" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none">
+                        <select id="activity-level" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none" onchange="calculateMacros()">
                             <option value="1.2">Sedentary</option>
                             <option value="1.375" selected>Lightly Active</option>
                             <option value="1.55">Moderately Active</option>
@@ -150,7 +151,7 @@
                     </div>
                     <div>
                         <label class="text-xs text-zinc-400">Goal</label>
-                        <select id="goal" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none">
+                        <select id="goal" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none" onchange="calculateMacros()">
                             <option value="Cut">Cut</option>
                             <option value="Maintain" selected>Maintain</option>
                             <option value="Bulk">Bulk</option>
@@ -158,8 +159,6 @@
                         </select>
                     </div>
                 </div>
-
-                <button onclick="calculateMacros()" class="mt-6 w-full h-12 bg-emerald-500 text-black rounded-3xl font-medium">CRUNCH NUMBERS</button>
 
                 <div class="mt-8 flex justify-between">
                     <div class="text-center">
@@ -301,7 +300,7 @@
 
     <script>
         // =============================================
-        // APEX GYM TRACKER v3.0 – MADE BY ANGEL
+        // APEX GYM TRACKER v3.1 – FIXED & COMPLETE
         // =============================================
         let state = {
             profiles: {
@@ -323,14 +322,12 @@
                     macroSettings: {bodyweight:185,activity:1.375,goal:"Maintain"},
                     strengthData: {},
                     photos: [],
-                    weeklyReviews: {},
-                    foodPresets: ["Chicken Breast 8oz","Whey Shake 2 scoops","Salmon 6oz"],
                     dailyData: {},
                     sleepRating: 4
                 }
             },
             currentProfileId: "main",
-            version: "3.0"
+            version: "3.1"
         };
 
         const STORAGE_KEY = "apexGymTracker_v3";
@@ -361,7 +358,7 @@
             calculateMacros();
             renderStrengthLog();
             renderPhotoGallery();
-            // renderFoodLog and renderHistoryTable removed to avoid errors
+            renderHistoryTable(); // FIXED: Now properly implemented
         }
 
         function updateHeader() {
@@ -387,7 +384,7 @@
             savedEl.textContent = `Last saved: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
         }
 
-        // Daily Schedule
+        // ==================== DAILY SCHEDULE ====================
         function renderSchedule() {
             const container = document.getElementById('daily-schedule');
             container.innerHTML = '';
@@ -448,6 +445,7 @@
             document.getElementById('progress-percentage').textContent = `${percent}%`;
         }
 
+        // ==================== SCHEDULE EDITOR ====================
         function editSchedule() {
             const modal = document.getElementById("schedule-modal-backdrop");
             modal.classList.remove("hidden");
@@ -512,6 +510,7 @@
             renderScheduleEditor();
         }
 
+        // ==================== WEEKLY TASKS ====================
         function renderWeeklyTasks() {
             const container = document.getElementById('weekly-tasks');
             container.innerHTML = '';
@@ -589,6 +588,7 @@
             renderWeeklyTasksEditor();
         }
 
+        // ==================== SIDE EFFECTS ====================
         function editSideEffects() {
             const p = getCurrentProfile();
             const newEffect = prompt("Add new side effect (or type existing one to remove):");
@@ -619,6 +619,7 @@
             saveData();
         }
 
+        // ==================== SLEEP ====================
         function renderSleepQuality() {
             const container = document.getElementById('sleep-quality');
             container.innerHTML = '';
@@ -638,6 +639,17 @@
             }
         }
 
+        function saveSleep() {
+            const p = getCurrentProfile();
+            const hours = parseFloat(document.getElementById('sleep-hours').value);
+            if (!p.dailyData) p.dailyData = {};
+            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
+            if (!p.dailyData[key]) p.dailyData[key] = {};
+            p.dailyData[key].sleep = hours;
+            saveData();
+        }
+
+        // ==================== MACROS ====================
         function calculateMacros() {
             const weight = parseFloat(document.getElementById('bodyweight').value) || 185;
             const activity = parseFloat(document.getElementById('activity-level').value);
@@ -655,6 +667,7 @@
             document.getElementById('fat-g').textContent = Math.round(calories * 0.3 / 9);
         }
 
+        // ==================== STRENGTH ====================
         function renderStrengthLog() {
             const container = document.getElementById('strength-list');
             container.innerHTML = '';
@@ -762,6 +775,7 @@
             renderStrengthLog();
         }
 
+        // ==================== PHOTOS ====================
         function handlePhotoUpload(e) {
             const files = e.target.files;
             const p = getCurrentProfile();
@@ -797,6 +811,7 @@
             });
         }
 
+        // ==================== BIBLE VERSE ====================
         function newBibleVerse() {
             const verses = [
                 { verse: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
@@ -808,6 +823,7 @@
             document.getElementById('bible-reference').textContent = `— ${random.ref}`;
         }
 
+        // ==================== CONFETTI ====================
         function triggerConfetti() {
             for (let i = 0; i < 80; i++) {
                 setTimeout(() => {
@@ -822,12 +838,14 @@
             }
         }
 
+        // ==================== TABS ====================
         function switchTab(n) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             const tabs = ['tab-daily','tab-macros','tab-strength','tab-photos'];
             document.getElementById(tabs[n]).classList.remove('hidden');
         }
 
+        // ==================== SETTINGS & UTILS ====================
         function showSettings() {
             const modal = document.getElementById("settings-modal-backdrop");
             modal.classList.remove("hidden");
@@ -848,7 +866,7 @@
         }
 
         function startTutorial() {
-            alert("📖 Welcome to Apex Gym Tracker!\n\n1. Tap profile avatar to switch/create accounts\n2. Use ✏️ EDIT on Daily & Weekly Tasks\n3. Tap CUSTOMIZE on Side Effects\n4. Strength tab has notes + graph\n5. Macros – enter numbers then tap 'Crunch Numbers'\n\nAll data stays private on your device.");
+            alert("📖 Welcome to Apex Gym Tracker!\n\n1. Tap profile avatar to switch/create accounts\n2. Use ✏️ EDIT on Daily & Weekly Tasks\n3. Tap CUSTOMIZE on Side Effects\n4. Strength tab has notes + graph\n5. Macros – enter numbers (auto-updates)\n\nAll data stays private on your device.");
         }
 
         function forceSaveWithAnimation() {
@@ -895,10 +913,7 @@
             }
         }
 
-        // =============================================
-        // PROFILE & CYCLE FUNCTIONS
-        // =============================================
-
+        // ==================== PROFILE & CYCLE ====================
         function showProfileSwitcher() {
             const modal = document.getElementById("profile-modal-backdrop");
             modal.classList.remove("hidden");
@@ -946,7 +961,7 @@
             state.profiles[id].initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
 
             saveData();
-            renderProfileList();   // ← Updates immediately
+            renderProfileList();
         }
 
         function renameProfile(id) {
@@ -963,20 +978,17 @@
         function deleteProfile(id) {
             if (confirm(`Delete profile "${state.profiles[id].name}" and all its data?`)) {
                 delete state.profiles[id];
-                
                 if (state.currentProfileId === id) {
                     state.currentProfileId = Object.keys(state.profiles)[0];
                 }
-                
                 saveData();
-                renderProfileList();   // ← Updates immediately
+                renderProfileList();
                 renderAll();
             }
         }
 
         function showCycleStartModal() {
             const modal = document.getElementById("cycle-modal-backdrop");
-            if (!modal) return;
             modal.classList.remove("hidden");
             modal.style.display = "flex";
             const p = getCurrentProfile();
@@ -1000,11 +1012,46 @@
             hideCycleModal();
         }
 
-        // Main initialization
+        // ==================== HISTORY TABLE (FIXED) ====================
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            const p = getCurrentProfile();
+            const start = new Date(p.cycleStartDate);
+            const today = new Date();
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const diffDays = Math.floor((date - start) / (1000 * 60 * 60 * 24)) + 1;
+                if (diffDays < 1) continue;
+
+                const key = `day-${diffDays}`;
+                const dayData = p.dailyData[key] || { completed: {} };
+                const total = p.schedule.length;
+                const done = Object.keys(dayData.completed).filter(k => dayData.completed[k]).length;
+                const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+                const sleep = dayData.sleep || p.sleepRating || 7.5;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-1 text-left">Day ${diffDays}</td>
+                    <td class="py-1 text-center">${percent}%</td>
+                    <td class="py-1 text-center">${sleep}</td>
+                    <td class="py-1 text-right">${done}/${total}</td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
         window.onload = function() {
             loadData();
             renderAll();
-            console.log('%c🚀 Apex Gym Tracker v3.0 – Made by Angel – Fully Operational', 'background:#10b981;color:#000;padding:4px 8px');
+            // Auto-calculate macros on load
+            calculateMacros();
+            console.log('%c🚀 Apex Gym Tracker v3.1 – Fixed & Complete – Made by Angel', 'background:#10b981;color:#000;padding:4px 8px');
         };
     </script>
 
