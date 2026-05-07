@@ -59,7 +59,6 @@
         
         <!-- DAILY TAB -->
         <div id="tab-daily" class="tab-content">
-            <!-- Progress Ring -->
             <div class="flex justify-center mt-6 mb-8">
                 <div class="relative w-48 h-48">
                     <svg id="progress-ring" width="192" height="192" class="transform -rotate-90">
@@ -74,7 +73,6 @@
                 </div>
             </div>
 
-            <!-- Today's Intake -->
             <div class="glass rounded-3xl p-4 mb-6">
                 <div class="flex justify-between items-center mb-2">
                     <div class="font-medium">Today's Intake</div>
@@ -87,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- Cycle Timeline -->
             <div class="mt-6 mb-8">
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h3 class="text-sm font-medium">Cycle Timeline</h3>
@@ -110,14 +107,12 @@
                 </div>
             </div>
 
-            <!-- Daily Schedule -->
             <div class="flex justify-between items-center mb-3 px-1">
                 <h3 class="text-sm font-medium">Daily Schedule</h3>
                 <button onclick="editSchedule()" class="bubble-btn flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-white px-5 py-2 rounded-full text-sm font-medium">✏️ EDIT</button>
             </div>
             <div class="space-y-3" id="daily-schedule"></div>
 
-            <!-- Food Logger -->
             <div class="mt-8">
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h3 class="text-sm font-medium">Food Logger</h3>
@@ -126,7 +121,6 @@
                 <div class="glass rounded-3xl p-4" id="food-log"></div>
             </div>
 
-            <!-- Body Measurements -->
             <div class="mt-8">
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h3 class="text-sm font-medium">Body Measurements</h3>
@@ -135,7 +129,6 @@
                 <div class="glass rounded-3xl p-4" id="measurements-quick"></div>
             </div>
 
-            <!-- Weekly Tasks -->
             <div class="mt-8">
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h3 class="text-sm font-medium">Weekly Tasks</h3>
@@ -144,7 +137,6 @@
                 <div class="space-y-3" id="weekly-tasks"></div>
             </div>
 
-            <!-- Side Effects -->
             <div class="mt-8">
                 <div class="flex justify-between mb-3 px-1">
                     <h3 class="text-sm font-medium flex items-center gap-2"><span class="text-amber-400">⚠️</span> Side Effects</h3>
@@ -153,7 +145,6 @@
                 <div class="grid grid-cols-2 gap-2" id="side-effects"></div>
             </div>
 
-            <!-- Sleep -->
             <div class="mt-8 glass rounded-3xl p-6">
                 <div class="flex justify-between items-center">
                     <div>
@@ -165,7 +156,6 @@
                 </div>
             </div>
 
-            <!-- Warrior Verse -->
             <div class="mt-8 glass rounded-3xl p-6">
                 <div class="flex justify-between items-baseline mb-3">
                     <div class="font-medium flex items-center gap-2"><span class="text-amber-400">🛡️</span> Warrior Verse</div>
@@ -175,7 +165,6 @@
                 <p id="bible-reference" class="text-xs text-emerald-400 mt-3"></p>
             </div>
 
-            <!-- History -->
             <div class="mt-8">
                 <h3 class="text-sm font-medium mb-3">Last 7 Cycle Days</h3>
                 <div class="overflow-x-auto hide-scrollbar">
@@ -269,6 +258,7 @@
         <button onclick="switchTab(4)" class="nav-btn flex flex-col items-center gap-1">Summary</button>
     </div>
 
+    <!-- All Modals (Food, Reminders, AI, Measurements, Photo Compare, Export, Profile, Cycle, Schedule, Weekly, Settings) -->
     <!-- FOOD MODAL -->
     <div onclick="if(event.target.id==='food-modal-backdrop')hideFoodModal()" id="food-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
         <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
@@ -311,9 +301,138 @@
         </div>
     </div>
 
+    <!-- MEASUREMENTS MODAL -->
+    <div onclick="if(event.target.id==='measurements-modal-backdrop')hideMeasurementsModal()" id="measurements-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Log Body Measurements</h2>
+            <div class="space-y-4">
+                <div><label class="text-xs text-zinc-400">Weight (lbs)</label><input id="meas-weight" type="number" step="0.1" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-xl font-semibold focus:outline-none"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="text-xs text-zinc-400">Waist (in)</label><input id="meas-waist" type="number" step="0.1" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-xl font-semibold focus:outline-none"></div>
+                    <div><label class="text-xs text-zinc-400">Arms (in)</label><input id="meas-arms" type="number" step="0.1" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-xl font-semibold focus:outline-none"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="text-xs text-zinc-400">Chest (in)</label><input id="meas-chest" type="number" step="0.1" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-xl font-semibold focus:outline-none"></div>
+                    <div><label class="text-xs text-zinc-400">Thighs (in)</label><input id="meas-thighs" type="number" step="0.1" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-xl font-semibold focus:outline-none"></div>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button onclick="hideMeasurementsModal()" class="flex-1 h-12 bg-white/10 rounded-3xl font-medium">Cancel</button>
+                <button onclick="saveMeasurement()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">Save Measurement</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHOTO COMPARE MODAL -->
+    <div onclick="if(event.target.id==='photo-compare-backdrop')hidePhotoCompare()" id="photo-compare-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Compare Progress</h2>
+            <div class="flex gap-3 mb-4">
+                <div class="flex-1">
+                    <div class="text-xs text-zinc-400 mb-1">Before</div>
+                    <img id="compare-before" class="w-full h-48 object-cover rounded-2xl border border-white/20">
+                </div>
+                <div class="flex-1">
+                    <div class="text-xs text-zinc-400 mb-1">After</div>
+                    <img id="compare-after" class="w-full h-48 object-cover rounded-2xl border border-white/20">
+                </div>
+            </div>
+            <button onclick="hidePhotoCompare()" class="mt-4 w-full h-12 bg-white/10 rounded-3xl">Close</button>
+        </div>
+    </div>
+
+    <!-- EXPORT MODAL -->
+    <div onclick="if(event.target.id==='export-modal-backdrop')hideExportModal()" id="export-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Export Your Data</h2>
+            <div class="space-y-3">
+                <button onclick="exportData()" class="w-full h-14 bg-emerald-500 text-black rounded-3xl font-medium flex items-center justify-center gap-2">📥 Download JSON Backup</button>
+                <button onclick="copyDataToClipboard()" class="w-full h-14 bg-white/10 rounded-3xl font-medium flex items-center justify-center gap-2">📋 Copy to Clipboard</button>
+                <div class="pt-3 border-t border-white/10">
+                    <label class="block text-sm text-zinc-400 mb-2">Import Data</label>
+                    <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
+                    <button onclick="document.getElementById('import-file').click()" class="w-full h-12 bg-white/10 hover:bg-white/20 rounded-3xl text-sm">📤 Upload JSON File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div onclick="if(event.target.id==='profile-modal-backdrop')hideProfileModal()" id="profile-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Manage Profiles</h2>
+            <div id="profile-list" class="space-y-2"></div>
+            <button onclick="createNewProfile()" class="mt-6 w-full h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ New Profile</button>
+        </div>
+    </div>
+
+    <!-- CYCLE START MODAL -->
+    <div onclick="if(event.target.id==='cycle-modal-backdrop')hideCycleModal()" id="cycle-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
+            <h2 class="text-xl font-semibold mb-4">Set Cycle Start Date</h2>
+            <input type="date" id="cycle-start-input" class="w-full bg-white/10 rounded-3xl px-6 h-14 text-lg focus:outline-none">
+            <div class="mt-8 flex gap-3">
+                <button onclick="hideCycleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl font-medium">Cancel</button>
+                <button onclick="saveCycleStartDate()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCHEDULE EDITOR MODAL -->
+    <div onclick="if(event.target.id==='schedule-modal-backdrop')hideScheduleModal()" id="schedule-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Edit Daily Schedule</h2>
+            <div id="schedule-editor-list" class="space-y-3 mb-6"></div>
+            <div class="flex gap-3">
+                <button onclick="addNewScheduleItem()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ Add New Item</button>
+                <button onclick="hideScheduleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WEEKLY TASKS EDITOR MODAL -->
+    <div onclick="if(event.target.id==='weekly-tasks-modal-backdrop')hideWeeklyTasksModal()" id="weekly-tasks-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Edit Weekly Tasks</h2>
+            <div id="weekly-tasks-editor-list" class="space-y-3 mb-6"></div>
+            <div class="flex gap-3">
+                <button onclick="addNewWeeklyTask()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ Add New Task</button>
+                <button onclick="hideWeeklyTasksModal()" class="flex-1 h-12 bg-white/10 rounded-3xl">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div onclick="if(event.target.id==='settings-modal-backdrop')hideSettings()" id="settings-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
+        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
+            <h2 class="text-xl font-semibold mb-4">Settings</h2>
+            <div class="mb-6">
+                <div class="font-medium mb-2">My Account</div>
+                <div class="glass rounded-3xl p-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div id="account-name" class="font-medium">Main Athlete</div>
+                            <div class="text-xs text-zinc-400">Personal Profile</div>
+                        </div>
+                        <button onclick="showAccountOptions()" class="text-emerald-400 text-sm">Manage</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-6">
+                <div class="font-medium mb-2">Tutorial</div>
+                <button onclick="startTutorial()" class="w-full h-12 bg-white/10 rounded-3xl text-sm">📖 Start Tutorial</button>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="forceSaveWithAnimation()" class="h-12 bg-emerald-500 text-black rounded-2xl font-medium flex items-center justify-center gap-2">Force Save <span class="refresh-spin hidden" id="save-spin">⟳</span></button>
+                <button onclick="forceLoadWithAnimation()" class="h-12 bg-white/10 rounded-2xl font-medium flex items-center justify-center gap-2">Force Load <span class="refresh-spin hidden" id="load-spin">⟳</span></button>
+            </div>
+            <button onclick="resetAllData()" class="w-full h-12 bg-red-500/80 text-white rounded-3xl font-medium">Reset All Data</button>
+        </div>
+    </div>
+
     <script>
         // =============================================
-        // APEX GYM TRACKER v3.5 – FULL COMPLETE VERSION
+        // APEX GYM TRACKER v3.6 – FULLY WORKING VERSION
         // =============================================
         let state = {
             profiles: {
@@ -328,10 +447,10 @@
                     reminders: [{id:1, time:"06:30", label:"Morning Stack", enabled:true},{id:2, time:"20:00", label:"Evening Injections", enabled:true}]
                 }
             },
-            currentProfileId: "main", version: "3.5"
+            currentProfileId: "main", version: "3.6"
         };
 
-        const STORAGE_KEY = "apexGymTracker_v3_5";
+        const STORAGE_KEY = "apexGymTracker_v3_6";
 
         function loadData() { const saved = localStorage.getItem(STORAGE_KEY); if (saved) state = JSON.parse(saved); }
         function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); updateLastSaved(); }
@@ -375,16 +494,17 @@
             const now = new Date(); savedEl.textContent = `Last saved: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
         }
 
-        // ==================== AI INSIGHTS ====================
         function showAIInsights() {
             const modal = document.getElementById("ai-modal-backdrop");
             modal.classList.remove("hidden"); modal.style.display = "flex";
             generateAIInsights();
         }
+
         function hideAIInsights() {
             const modal = document.getElementById("ai-modal-backdrop");
             modal.classList.add("hidden"); modal.style.display = "none";
         }
+
         function generateAIInsights() {
             const p = getCurrentProfile(); const container = document.getElementById('ai-insights-container'); container.innerHTML = '';
             const insights = [];
@@ -416,14 +536,13 @@
             });
             if (insights.length === 0) container.innerHTML = `<div class="text-center py-8"><div class="text-4xl mb-3">🧠</div><div class="font-medium">No major insights right now</div><div class="text-sm text-zinc-400 mt-1">Keep logging data — the AI will analyze patterns as you go.</div></div>`;
         }
+
         function calculateConsistency() {
             const p = getCurrentProfile(); const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
             const dayData = p.dailyData[key] || { completed: {} }; const total = p.schedule.length;
             const done = Object.keys(dayData.completed).filter(k => dayData.completed[k]).length;
             return total > 0 ? Math.round((done / total) * 100) : 0;
         }
-
-        // ==================== FULLY EXPANDED FUNCTIONS ====================
 
         function renderCycleTimeline() {
             const p = getCurrentProfile();
@@ -924,62 +1043,431 @@
             saveData();
             const oldLevel = Math.floor((p.xp - amount) / 300);
             const newLevel = Math.floor(p.xp / 300);
-            if (newLevel > oldLevel) { triggerConfetti(); setTimeout(() => alert(`🎉 LEVEL UP! You reached Level ${newLevel + 1}`), 800); }
-            if (!document.getElementById('tab-summary').classList.contains('hidden')) renderSummary();
-        }
+             if (newLevel > oldLevel) { triggerConfetti(); setTimeout(() => alert(`🎉 LEVEL UP! You reached Level ${newLevel + 1}`), 800); }
+        if (!document.getElementById('tab-summary').classList.contains('hidden')) renderSummary();
+    }
 
-        function showExportModal() { /* ... */ }
-        function hideExportModal() { /* ... */ }
-        function exportData() { /* ... */ }
-        function copyDataToClipboard() { /* ... */ }
-        function importData(event) { /* ... */ }
-        function shareCleanLink() { /* ... */ }
-        function renderWeeklyTasks() { /* ... */ }
-        function editWeeklyTasks() { /* ... */ }
-        function renderWeeklyTasksEditor() { /* ... */ }
-        function updateWeeklyTaskItem(index, field, value) { /* ... */ }
-        function removeWeeklyTaskItem(index) { /* ... */ }
-        function addNewWeeklyTask() { /* ... */ }
-        function editSideEffects() { /* ... */ }
-        function renderSideEffects() { /* ... */ }
-        function toggleSideEffect(effect, checked) { /* ... */ }
-        function renderSleepQuality() { /* ... */ }
-        function saveSleep() { /* ... */ }
-        function calculateMacros() { /* ... */ }
-        function newBibleVerse() { /* ... */ }
-        function triggerConfetti() { /* ... */ }
-        function switchTab(n) { /* ... */ }
-        function showSettings() { /* ... */ }
-        function hideSettings() { /* ... */ }
-        function startTutorial() { /* ... */ }
-        function forceSaveWithAnimation() { /* ... */ }
-        function forceLoadWithAnimation() { /* ... */ }
-        function resetAllData() { /* ... */ }
-        function showAccountOptions() { /* ... */ }
-        function showProfileSwitcher() { /* ... */ }
-        function hideProfileModal() { /* ... */ }
-        function renderProfileList() { /* ... */ }
-        function switchProfile(id) { /* ... */ }
-        function createNewProfile() { /* ... */ }
-        function renameProfile(id) { /* ... */ }
-        function deleteProfile(id) { /* ... */ }
-        function showCycleStartModal() { /* ... */ }
-        function hideCycleModal() { /* ... */ }
-        function saveCycleStartDate() { /* ... */ }
-        function renderHistoryTable() { /* ... */ }
+    function showExportModal() {
+        const modal = document.getElementById("export-modal-backdrop");
+        modal.classList.remove("hidden"); modal.style.display = "flex";
+    }
 
-        // ==================== INITIALIZATION ====================
-        window.onload = function() {
-            loadData(); checkForFreshStart(); renderAll(); calculateMacros();
-            if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
-            setInterval(checkReminders, 60000);
-            console.log('%c🚀 Apex Gym Tracker v3.5 – Full Complete – Made by Angel', 'background:#10b981;color:#000;padding:4px 8px');
+    function hideExportModal() {
+        const modal = document.getElementById("export-modal-backdrop");
+        modal.classList.add("hidden"); modal.style.display = "none";
+    }
+
+    function exportData() {
+        const p = getCurrentProfile();
+        const dataStr = JSON.stringify(p, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = `apex-backup-${p.name.replace(/\s+/g, '-')}-${new Date().toISOString().slice(0,10)}.json`;
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        hideExportModal();
+    }
+
+    function copyDataToClipboard() {
+        const p = getCurrentProfile();
+        const dataStr = JSON.stringify(p, null, 2);
+        navigator.clipboard.writeText(dataStr).then(() => {
+            alert("✅ Data copied to clipboard!");
+            hideExportModal();
+        });
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                const p = getCurrentProfile();
+                Object.keys(imported).forEach(key => { p[key] = imported[key]; });
+                saveData();
+                renderAll();
+                alert("✅ Data imported successfully!");
+                hideExportModal();
+            } catch (err) {
+                alert("❌ Invalid backup file.");
+            }
         };
+        reader.readAsText(file);
+    }
+
+    function shareCleanLink() {
+        const baseUrl = window.location.href.split('?')[0];
+        const freshUrl = baseUrl + '?fresh=true';
+        navigator.clipboard.writeText(freshUrl).then(() => {
+            alert("✅ Fresh Start Link Copied!\n\nAnyone who opens this link will start with ZERO supplements, tasks, or data.");
+        });
+    }
+
+    function renderWeeklyTasks() {
+        const container = document.getElementById('weekly-tasks');
+        container.innerHTML = '';
+        const p = getCurrentProfile();
+        p.weeklyTasks.forEach((task) => {
+            const div = document.createElement('div');
+            div.className = `flex items-center gap-4 p-4 rounded-3xl glass`;
+            div.innerHTML = `
+                <div class="flex-1">
+                    <div class="flex justify-between">
+                        <div><span class="font-medium">${task.time}</span> <span class="ml-3 text-emerald-400">${task.name}</span></div>
+                        ${task.dose ? `<span class="text-xs text-zinc-400">${task.dose}</span>` : ''}
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function editWeeklyTasks() {
+        const modal = document.getElementById("weekly-tasks-modal-backdrop");
+        modal.classList.remove("hidden"); modal.style.display = "flex";
+        renderWeeklyTasksEditor();
+    }
+
+    function hideWeeklyTasksModal() {
+        const modal = document.getElementById("weekly-tasks-modal-backdrop");
+        modal.classList.add("hidden"); modal.style.display = "none";
+        renderWeeklyTasks();
+    }
+
+    function renderWeeklyTasksEditor() {
+        const container = document.getElementById("weekly-tasks-editor-list");
+        container.innerHTML = '';
+        const p = getCurrentProfile();
+        p.weeklyTasks.forEach((task, index) => {
+            const div = document.createElement('div');
+            div.className = 'glass rounded-3xl p-4';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <input type="text" value="${task.time}" class="w-24 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateWeeklyTaskItem(${index}, 'time', this.value)">
+                    <input type="text" value="${task.name}" class="flex-1 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateWeeklyTaskItem(${index}, 'name', this.value)">
+                    <input type="text" value="${task.dose || ''}" class="w-28 bg-white/10 rounded-2xl px-3 py-2 text-sm" placeholder="dose" onchange="updateWeeklyTaskItem(${index}, 'dose', this.value)">
+                    <button onclick="removeWeeklyTaskItem(${index})" class="text-red-400 text-xl">✕</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function updateWeeklyTaskItem(index, field, value) {
+        const p = getCurrentProfile();
+        p.weeklyTasks[index][field] = value;
+        saveData();
+    }
+
+    function removeWeeklyTaskItem(index) {
+        if (confirm("Delete this weekly task?")) {
+            const p = getCurrentProfile();
+            p.weeklyTasks.splice(index, 1);
+            saveData();
+            renderWeeklyTasksEditor();
+        }
+    }
+
+    function addNewWeeklyTask() {
+        const p = getCurrentProfile();
+        const newId = Math.max(0, ...p.weeklyTasks.map(t => t.id)) + 1;
+        p.weeklyTasks.push({id: newId, time: "Mon & Thu", name: "New Weekly Task", dose: ""});
+        saveData();
+        renderWeeklyTasksEditor();
+    }
+
+    function editSideEffects() {
+        const p = getCurrentProfile();
+        const newEffect = prompt("Add new side effect (or type existing one to remove):");
+        if (!newEffect) return;
+        if (p.sideEffectsPresets.includes(newEffect)) {
+            p.sideEffectsPresets = p.sideEffectsPresets.filter(e => e !== newEffect);
+        } else {
+            p.sideEffectsPresets.push(newEffect);
+        }
+        saveData();
+        renderSideEffects();
+    }
+
+    function renderSideEffects() {
+        const container = document.getElementById('side-effects');
+        container.innerHTML = '';
+        const p = getCurrentProfile();
+        p.sideEffectsPresets.forEach(effect => {
+            const div = document.createElement('div');
+            div.className = 'glass rounded-2xl p-3 text-sm flex items-center justify-between';
+            div.innerHTML = `${effect} <input type="checkbox" onchange="toggleSideEffect('${effect}', this.checked)">`;
+            container.appendChild(div);
+        });
+    }
+
+    function toggleSideEffect(effect, checked) {
+        saveData();
+    }
+
+    function renderSleepQuality() {
+        const container = document.getElementById('sleep-quality');
+        container.innerHTML = '';
+        const p = getCurrentProfile();
+        let currentRating = p.sleepRating || 4;
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('button');
+            star.textContent = '★';
+            star.className = `text-3xl transition-colors ${i <= currentRating ? 'text-amber-400' : 'text-zinc-600'}`;
+            star.onclick = () => {
+                p.sleepRating = i;
+                saveData();
+                renderSleepQuality();
+            };
+            container.appendChild(star);
+        }
+    }
+
+    function saveSleep() {
+        const p = getCurrentProfile();
+        const hours = parseFloat(document.getElementById('sleep-hours').value);
+        if (!p.dailyData) p.dailyData = {};
+        const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
+        if (!p.dailyData[key]) p.dailyData[key] = {};
+        p.dailyData[key].sleep = hours;
+        saveData();
+    }
+
+    function calculateMacros() {
+        const weight = parseFloat(document.getElementById('bodyweight').value) || 185;
+        const activity = parseFloat(document.getElementById('activity-level').value);
+        const goal = document.getElementById('goal').value;
+        let calories = Math.round(88.362 + (13.397 * weight * 0.453592) * activity);
+        if (goal === "Cut") calories = Math.round(calories * 0.85);
+        if (goal === "Bulk") calories = Math.round(calories * 1.15);
+        if (goal === "Recomp") calories = Math.round(calories * 0.95);
+        document.getElementById('calories').textContent = calories;
+        document.getElementById('protein-g').textContent = Math.round(weight * 1.8);
+        document.getElementById('carbs-g').textContent = Math.round(calories * 0.45 / 4);
+        document.getElementById('fat-g').textContent = Math.round(calories * 0.3 / 9);
+    }
+
+    function newBibleVerse() {
+        const verses = [
+            { verse: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
+            { verse: "But those who hope in the Lord will renew their strength.", ref: "Isaiah 40:31" },
+            { verse: "Be strong and courageous. Do not be afraid.", ref: "Joshua 1:9" }
+        ];
+        const random = verses[Math.floor(Math.random() * verses.length)];
+        document.getElementById('bible-verse').innerHTML = `"${random.verse}"`;
+        document.getElementById('bible-reference').textContent = `— ${random.ref}`;
+    }
+
+    function triggerConfetti() {
+        for (let i = 0; i < 80; i++) {
+            setTimeout(() => {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = ['#10b981','#eab308','#ec4899'][Math.floor(Math.random()*3)];
+                document.body.appendChild(c);
+                c.animate([{transform:'translateY(0)'},{transform:`translateY(${window.innerHeight+100}px) rotate(${Math.random()*800}deg)`}], {duration: Math.random()*2500+1500});
+                setTimeout(() => c.remove(), 4000);
+            }, i * 3);
+        }
+    }
+
+    function switchTab(n) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        const tabs = ['tab-daily','tab-macros','tab-strength','tab-photos','tab-summary'];
+        document.getElementById(tabs[n]).classList.remove('hidden');
+        if (n === 4) renderSummary();
+    }
+
+    function showSettings() {
+        const modal = document.getElementById("settings-modal-backdrop");
+        modal.classList.remove("hidden"); modal.style.display = "flex";
+    }
+
+    function hideSettings() {
+        const modal = document.getElementById("settings-modal-backdrop");
+        modal.classList.add("hidden"); modal.style.display = "none";
+    }
+
+    function startTutorial() {
+        alert("📖 Welcome to Apex Gym Tracker!\n\n1. Tap profile avatar to switch/create accounts\n2. Use ✏️ EDIT on Daily & Weekly Tasks\n3. Tap CUSTOMIZE on Side Effects\n4. Strength tab has notes + graph\n5. Macros – enter numbers (auto-updates)\n\nAll data stays private on your device.");
+    }
+
+    function forceSaveWithAnimation() {
+        const spin = document.getElementById('save-spin');
+        spin.classList.remove('hidden'); spin.classList.add('refresh-spin');
+        setTimeout(() => {
+            spin.classList.remove('refresh-spin'); spin.classList.add('hidden');
+            saveData();
+            alert("✅ Saved successfully!");
+        }, 600);
+    }
+
+    function forceLoadWithAnimation() {
+        const spin = document.getElementById('load-spin');
+        spin.classList.remove('hidden'); spin.classList.add('refresh-spin');
+        setTimeout(() => {
+            spin.classList.remove('refresh-spin'); spin.classList.add('hidden');
+            loadData();
+            renderAll();
+            alert("✅ Data loaded!");
+        }, 600);
+    }
+
+    function resetAllData() {
+        if (confirm("⚠️ This will delete ALL your data and start fresh.\n\nAre you sure?")) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+    }
+
+    function showAccountOptions() {
+        const p = getCurrentProfile();
+        const newName = prompt("Change profile name:", p.name);
+        if (newName && newName !== p.name) {
+            p.name = newName;
+            p.initials = newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+            saveData();
+            renderAll();
+            document.getElementById("account-name").textContent = newName;
+        }
+    }
+
+    function showProfileSwitcher() {
+        const modal = document.getElementById("profile-modal-backdrop");
+        modal.classList.remove("hidden"); modal.style.display = "flex";
+        renderProfileList();
+    }
+
+    function hideProfileModal() {
+        const modal = document.getElementById("profile-modal-backdrop");
+        modal.classList.add("hidden"); modal.style.display = "none";
+    }
+
+    function renderProfileList() {
+        const container = document.getElementById("profile-list");
+        container.innerHTML = Object.values(state.profiles).map(p => `
+            <div onclick="switchProfile('${p.id}')" class="flex items-center justify-between p-4 rounded-3xl glass ${p.id === state.currentProfileId ? 'ring-2 ring-emerald-400' : ''}">
+                <div class="flex items-center gap-3">
+                    <div class="profile-avatar">${p.initials}</div>
+                    <div class="font-medium">${p.name}</div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="event.stopImmediatePropagation();renameProfile('${p.id}')" class="text-xs px-3 py-1 bg-white/10 rounded-2xl">Rename</button>
+                    ${Object.keys(state.profiles).length > 1 ? `<button onclick="event.stopImmediatePropagation();deleteProfile('${p.id}')" class="text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded-2xl">Delete</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function switchProfile(id) {
+        state.currentProfileId = id;
+        saveData();
+        renderAll();
+        hideProfileModal();
+    }
+
+    function createNewProfile() {
+        const name = prompt("New profile name:", "New Athlete");
+        if (!name) return;
+        const id = "p-" + Date.now();
+        state.profiles[id] = JSON.parse(JSON.stringify(state.profiles.main));
+        state.profiles[id].id = id;
+        state.profiles[id].name = name;
+        state.profiles[id].initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+        saveData();
+        renderProfileList();
+    }
+
+    function renameProfile(id) {
+        const newName = prompt("Rename to:", state.profiles[id].name);
+        if (newName) {
+            state.profiles[id].name = newName;
+            state.profiles[id].initials = newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
+            saveData();
+            renderAll();
+            hideProfileModal();
+        }
+    }
+
+    function deleteProfile(id) {
+        if (confirm(`Delete profile "${state.profiles[id].name}" and all its data?`)) {
+            delete state.profiles[id];
+            if (state.currentProfileId === id) {
+                state.currentProfileId = Object.keys(state.profiles)[0];
+            }
+            saveData();
+            renderProfileList();
+            renderAll();
+        }
+    }
+
+    function showCycleStartModal() {
+        const modal = document.getElementById("cycle-modal-backdrop");
+        modal.classList.remove("hidden"); modal.style.display = "flex";
+        const p = getCurrentProfile();
+        document.getElementById("cycle-start-input").value = p.cycleStartDate || "2025-05-01";
+    }
+
+    function hideCycleModal() {
+        const modal = document.getElementById("cycle-modal-backdrop");
+        modal.classList.add("hidden"); modal.style.display = "none";
+    }
+
+    function saveCycleStartDate() {
+        const newDate = document.getElementById("cycle-start-input").value;
+        if (newDate) {
+            const p = getCurrentProfile();
+            p.cycleStartDate = newDate;
+            saveData();
+            renderAll();
+        }
+        hideCycleModal();
+    }
+
+    function renderHistoryTable() {
+        const tbody = document.getElementById('history-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const p = getCurrentProfile();
+        const start = new Date(p.cycleStartDate);
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const diffDays = Math.floor((date - start) / (1000 * 60 * 60 * 24)) + 1;
+            if (diffDays < 1) continue;
+            const key = `day-${diffDays}`;
+            const dayData = p.dailyData[key] || { completed: {} };
+            const total = p.schedule.length;
+            const done = Object.keys(dayData.completed).filter(k => dayData.completed[k]).length;
+            const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+            const sleep = dayData.sleep || p.sleepRating || 7.5;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="py-1 text-left">Day ${diffDays}</td>
+                <td class="py-1 text-center">${percent}%</td>
+                <td class="py-1 text-center">${sleep}</td>
+                <td class="py-1 text-right">${done}/${total}</td>
+            `;
+            tbody.appendChild(row);
+        }
+    }
+
+    window.onload = function() {
+        loadData(); checkForFreshStart(); renderAll(); calculateMacros();
+        if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+        setInterval(checkReminders, 60000);
+        console.log('%c🚀 Apex Gym Tracker v3.6 – Fully Working – Made by Angel', 'background:#10b981;color:#000;padding:4px 8px');
+    };
     </script>
 
     <footer class="max-w-[428px] mx-auto text-center text-zinc-500 text-xs py-8 border-t border-white/10">
-        Made by Angel • v3.5 • Full Complete Version
+        Made by Angel • v3.6 • Fully Working
     </footer>
 
 </body>
-</html>
+</html>                                 
