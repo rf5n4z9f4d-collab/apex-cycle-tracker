@@ -2,1021 +2,673 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#10b981">
-    <title>Apex Gym Tracker • Made by Angel • v3.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApexForge • v5.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
-        :root { --tw-color-primary: #10b981; }
-        * { -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); }
-        .tab-bar { box-shadow: 0 -4px 20px -4px rgb(16 185 129); }
-        .progress-ring__circle { transition: stroke-dashoffset 0.35s; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .modal { animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        @keyframes modalPop { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .confetti { position: absolute; width: 10px; height: 10px; animation: confetti-fall 3s linear forwards; }
-        .profile-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #34d399); color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; box-shadow: 0 2px 8px -2px rgb(16 185 129); }
-        .bubble-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .bubble-btn:active { transform: scale(0.95); }
-        .refresh-spin { animation: spin 0.6s linear; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --accent-cyan: #00f5ff;
+            --accent-magenta: #ff00aa;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', system_ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(24px);
+        }
+
+        .neon-cyan {
+            box-shadow: 0 0 15px #00f5ff,
+                        0 0 30px rgba(0, 245, 255, 0.3);
+        }
+
+        .neon-magenta {
+            box-shadow: 0 0 15px #ff00aa,
+                        0 0 30px rgba(255, 0, 170, 0.3);
+        }
+
+        .premium-card {
+            transition: all 0.3s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .nav-active {
+            background: white;
+            color: black;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        .section {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .futuristic-bg {
+            background: #0a0a0a;
+        }
+
+        .holo-text {
+            background: linear-gradient(90deg, #00f5ff, #ff00aa, #00f5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 100%;
+            animation: holo 3s linear infinite;
+        }
+
+        .calendar-day {
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(255,255,255,0.08);
+            transform: scale(1.05);
+        }
+        
+        .calendar-day.selected {
+            background: #00f5ff;
+            color: black;
+            font-weight: 600;
+        }
+
+        .modal {
+            animation: modalPop 0.3s cubic-bezier(0.23, 1.0, 0.32, 1);
+        }
+
+        .chat-bubble {
+            animation: bubblePop 0.3s ease;
+        }
     </style>
 </head>
-<body class="bg-[#071822] text-zinc-100 min-h-screen pb-20 font-sans">
-
-    <!-- HEADER -->
-    <div class="max-w-[428px] mx-auto bg-[#071822] border-b border-white/10 sticky top-0 z-50">
-        <div class="px-6 pt-12 pb-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <h1 class="text-3xl font-semibold tracking-tighter" style="font-family: 'Space Grotesk', sans-serif;">APEX</h1>
-                <div onclick="showProfileSwitcher()" class="flex items-center gap-2 cursor-pointer active:scale-95">
-                    <div id="current-profile-avatar" class="profile-avatar">MA</div>
-                    <div>
-                        <div id="current-profile-name" class="font-medium">Main Athlete</div>
-                        <div class="text-xs text-emerald-400">WEEK <span id="current-week-display">1</span> • DAY <span id="current-day-display">3</span></div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <button onclick="shareCleanLink()" class="flex items-center gap-1 text-xs bg-white/10 hover:bg-emerald-500/20 px-4 h-8 rounded-3xl transition-colors">🔗 Share</button>
-                <button onclick="showCycleStartModal()" class="w-9 h-9 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-emerald-500/20 transition-colors">📅</button>
-                <button onclick="showSettings()" class="w-9 h-9 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-emerald-500/20 transition-colors">⚙️</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB CONTENTS -->
-    <div class="max-w-[428px] mx-auto px-4">
-        
-        <!-- DAILY TAB -->
-        <div id="tab-daily" class="tab-content">
-            <!-- Progress Ring -->
-            <div class="flex justify-center mt-6 mb-8">
-                <div class="relative w-48 h-48">
-                    <svg id="progress-ring" width="192" height="192" class="transform -rotate-90">
-                        <circle cx="96" cy="96" r="82" fill="none" stroke="#1f2937" stroke-width="22"/>
-                        <circle id="progress-circle" cx="96" cy="96" r="82" fill="none" stroke="#10b981" stroke-width="22" stroke-dasharray="515.22" stroke-dashoffset="128.805" stroke-linecap="round"/>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div id="progress-percentage" class="text-6xl font-semibold text-emerald-400">0%</div>
-                        <div class="text-zinc-400 text-sm -mt-1">of day complete</div>
-                        <div id="streak-badge" class="mt-4 flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-xs px-4 h-8 rounded-3xl">🔥 <span id="streak-count">0</span> day streak</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Daily Schedule -->
-            <div class="flex justify-between items-center mb-3 px-1">
-                <h3 class="text-sm font-medium">Daily Schedule</h3>
-                <button onclick="editSchedule()" class="bubble-btn flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-white px-5 py-2 rounded-full text-sm font-medium">✏️ EDIT</button>
-            </div>
-            <div class="space-y-3" id="daily-schedule"></div>
-
-            <!-- WEEKLY TASKS -->
-            <div class="mt-8">
-                <div class="flex justify-between items-center mb-3 px-1">
-                    <h3 class="text-sm font-medium">Weekly Tasks</h3>
-                    <button onclick="editWeeklyTasks()" class="bubble-btn flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-white px-5 py-2 rounded-full text-sm font-medium">✏️ EDIT</button>
-                </div>
-                <div class="space-y-3" id="weekly-tasks"></div>
-            </div>
-
-            <!-- Side Effects -->
-            <div class="mt-8">
-                <div class="flex justify-between mb-3 px-1">
-                    <h3 class="text-sm font-medium flex items-center gap-2"><span class="text-amber-400">⚠️</span> Side Effects</h3>
-                    <button onclick="editSideEffects()" class="bubble-btn flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-white px-5 py-2 rounded-full text-sm font-medium">CUSTOMIZE</button>
-                </div>
-                <div class="grid grid-cols-2 gap-2" id="side-effects"></div>
-            </div>
-
-            <!-- Sleep -->
-            <div class="mt-8 glass rounded-3xl p-6">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <div class="font-medium">Sleep</div>
-                        <input type="number" id="sleep-hours" step="0.5" min="0" max="12" value="7.5" class="w-20 bg-transparent text-4xl font-semibold focus:outline-none text-emerald-400" onchange="saveData()">
-                        <span class="text-zinc-400">hours</span>
-                    </div>
-                    <div class="flex gap-1" id="sleep-quality"></div>
-                </div>
-            </div>
-
-            <!-- Warrior Verse -->
-            <div class="mt-8 glass rounded-3xl p-6">
-                <div class="flex justify-between items-baseline mb-3">
-                    <div class="font-medium flex items-center gap-2"><span class="text-amber-400">🛡️</span> Warrior Verse</div>
-                    <button onclick="newBibleVerse()" class="text-xs bg-white/10 hover:bg-emerald-500/20 px-4 h-7 rounded-3xl transition-colors">NEW VERSE</button>
-                </div>
-                <p id="bible-verse" class="italic text-zinc-300 leading-relaxed"></p>
-                <p id="bible-reference" class="text-xs text-emerald-400 mt-3"></p>
-            </div>
-
-            <!-- History -->
-            <div class="mt-8">
-                <h3 class="text-sm font-medium mb-3">Last 7 Cycle Days</h3>
-                <div class="overflow-x-auto hide-scrollbar">
-                    <table class="w-full text-xs" id="history-table">
-                        <thead>
-                            <tr class="text-zinc-400"><th class="text-left pb-2">Day</th><th class="text-center pb-2">%</th><th class="text-center pb-2">Sleep</th><th class="text-right pb-2">Done</th></tr>
-                        </thead>
-                        <tbody id="history-body" class="text-zinc-300"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- MACROS TAB -->
-        <div id="tab-macros" class="tab-content hidden">
-            <div class="mt-6 glass rounded-3xl p-6">
-                <h2 class="text-lg font-semibold mb-4">Macro Calculator</h2>
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="text-xs text-zinc-400">Bodyweight (lbs)</label>
-                        <input id="bodyweight" type="number" value="185" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-2xl font-semibold focus:outline-none">
+<body class="futuristic-bg text-white">
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#00f5ff] to-[#ff00aa] flex items-center justify-center">
+                        <i class="fa-solid fa-rocket text-black text-2xl"></i>
                     </div>
                     <div>
-                        <label class="text-xs text-zinc-400">Activity Level</label>
-                        <select id="activity-level" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none">
-                            <option value="1.2">Sedentary</option>
-                            <option value="1.375" selected>Lightly Active</option>
-                            <option value="1.55">Moderately Active</option>
-                            <option value="1.725">Very Active</option>
-                            <option value="1.9">Extra Active</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs text-zinc-400">Goal</label>
-                        <select id="goal" class="w-full bg-white/10 rounded-2xl px-4 h-12 text-sm focus:outline-none">
-                            <option value="Cut">Cut</option>
-                            <option value="Maintain" selected>Maintain</option>
-                            <option value="Bulk">Bulk</option>
-                            <option value="Recomp">Recomp</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button onclick="calculateMacros()" class="mt-6 w-full h-12 bg-emerald-500 text-black rounded-3xl font-medium">CRUNCH NUMBERS</button>
-
-                <div class="mt-8 flex justify-between">
-                    <div class="text-center">
-                        <div id="calories" class="text-5xl font-semibold text-emerald-400">2870</div>
-                        <div class="text-xs text-zinc-400 tracking-widest">CALORIES</div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-6 text-center">
-                        <div>
-                            <div id="protein-g" class="text-3xl font-semibold">172</div>
-                            <div class="text-[10px] text-sky-400">PROTEIN</div>
-                        </div>
-                        <div>
-                            <div id="carbs-g" class="text-3xl font-semibold">322</div>
-                            <div class="text-[10px] text-amber-400">CARBS</div>
-                        </div>
-                        <div>
-                            <div id="fat-g" class="text-3xl font-semibold">95</div>
-                            <div class="text-[10px] text-rose-400">FAT</div>
-                        </div>
+                        <div class="text-3xl font-bold tracking-tighter font-display">APEXFORGE</div>
+                        <div class="text-[10px] text-white/50 -mt-1.5">v5.2 • 2032</div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- STRENGTH TAB -->
-        <div id="tab-strength" class="tab-content hidden">
-            <div class="mt-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold">Strength Log</h2>
-                    <button onclick="addCustomExercise()" class="bubble-btn flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-white px-5 py-2 rounded-full text-sm font-medium">+ Exercise</button>
-                </div>
-                <div class="space-y-6" id="strength-list"></div>
-                
-                <div class="mt-12">
-                    <h3 class="text-sm font-medium mb-3">Week-to-Week Progression</h3>
-                    <canvas id="strength-chart" width="380" height="200" class="w-full bg-white/5 rounded-3xl p-4"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- PHOTOS TAB -->
-        <div id="tab-photos" class="tab-content hidden">
-            <div class="mt-6">
-                <h2 class="text-lg font-semibold mb-4">Progress Photos</h2>
-                <label class="block border-2 border-dashed border-emerald-400/30 hover:border-emerald-400 rounded-3xl p-8 text-center cursor-pointer transition-colors">
-                    <input type="file" id="photo-upload" accept="image/*" capture="environment" multiple class="hidden" onchange="handlePhotoUpload(event)">
-                    <div class="text-emerald-400 text-4xl mb-2">📸</div>
-                    <div class="font-medium">Take or upload progress photo</div>
-                </label>
-                <div class="mt-8 grid grid-cols-3 gap-2" id="photo-gallery"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BOTTOM TAB BAR -->
-    <div class="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto tab-bar bg-[#071822]/95 border-t border-white/10 py-2 px-2 flex items-center justify-around text-xs z-50">
-        <button onclick="switchTab(0)" class="nav-btn flex flex-col items-center gap-1 text-emerald-400">Daily</button>
-        <button onclick="switchTab(1)" class="nav-btn flex flex-col items-center gap-1">Macros</button>
-        <button onclick="switchTab(2)" class="nav-btn flex flex-col items-center gap-1">Strength</button>
-        <button onclick="switchTab(3)" class="nav-btn flex flex-col items-center gap-1">Photos</button>
-    </div>
-
-    <!-- SETTINGS MODAL -->
-    <div onclick="if(event.target.id==='settings-modal-backdrop')hideSettings()" id="settings-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
-        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
-            <h2 class="text-xl font-semibold mb-4">Settings</h2>
             
-            <div class="mb-6">
-                <div class="font-medium mb-2">My Account</div>
-                <div class="glass rounded-3xl p-4">
-                    <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-2xl bg-white/5 text-sm">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span>Week 16 • Day 47</span>
+                </div>
+                
+                <button onclick="showSettings()" 
+                        class="w-11 h-11 flex items-center justify-center rounded-2xl glass hover:bg-white/10 transition-all">
+                    <i class="fa-solid fa-cog text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 pt-8 pb-24">
+        
+        <!-- Hero Dashboard -->
+        <div class="flex flex-col lg:flex-row gap-8 items-end mb-12">
+            <div class="flex-1">
+                <div class="inline-flex items-center gap-2 px-5 py-1.5 rounded-3xl bg-white/5 text-sm mb-6">
+                    <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="font-medium">GOOD MORNING, ANGEL</span>
+                </div>
+                
+                <h1 class="text-7xl lg:text-[92px] leading-none font-bold tracking-tighter mb-4">
+                    DAY 47 <span class="text-white/40">OF 84</span>
+                </h1>
+                
+                <div class="flex items-center gap-5">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-fire text-3xl text-orange-400"></i>
                         <div>
-                            <div id="account-name" class="font-medium">Main Athlete</div>
-                            <div class="text-xs text-zinc-400">Personal Profile</div>
+                            <div class="text-4xl font-semibold tabular-nums">12</div>
+                            <div class="text-xs text-white/50 -mt-1">DAY STREAK</div>
                         </div>
-                        <button onclick="showAccountOptions()" class="text-emerald-400 text-sm">Manage</button>
                     </div>
+                    <div class="h-9 w-px bg-white/20"></div>
+                    <div class="text-lg text-white/60">Personal best: <span class="font-semibold text-white">19 days</span></div>
                 </div>
             </div>
 
+            <!-- Progress Ring -->
+            <div class="relative w-44 h-44 flex-shrink-0">
+                <svg class="w-44 h-44 -rotate-90" viewBox="0 0 140 140">
+                    <circle cx="70" cy="70" r="60" fill="none" stroke="#ffffff10" stroke-width="10"/>
+                    <circle cx="70" cy="70" r="60" fill="none" stroke="#00f5ff" stroke-width="10" 
+                            stroke-dasharray="377" stroke-dashoffset="94" stroke-linecap="round"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-6xl font-bold tabular-nums">87</div>
+                    <div class="text-sm text-white/50 -mt-1">COMPLETE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex gap-2 mb-8 overflow-x-auto pb-2">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard"
+                    class="nav-active px-6 py-3.5 rounded-3xl flex items-center gap-2.5 text-sm font-medium">
+                <i class="fa-solid fa-home"></i>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="switchTab('calendar')" id="tab-calendar"
+                    class="glass px-6 py-3.5 rounded-3xl flex items-center gap-2.5 text-sm font-medium text-white/70 hover:text-white">
+                <i class="fa-solid fa-calendar"></i>
+                <span>Calendar</span>
+            </button>
+            <button onclick="switchTab('exercise')" id="tab-exercise"
+                    class="glass px-6 py-3.5 rounded-3xl flex items-center gap-2.5 text-sm font-medium text-white/70 hover:text-white">
+                <i class="fa-solid fa-dumbbell"></i>
+                <span>Exercise</span>
+            </button>
+            <button onclick="switchTab('insights')" id="tab-insights"
+                    class="glass px-6 py-3.5 rounded-3xl flex items-center gap-2.5 text-sm font-medium text-white/70 hover:text-white">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Insights + AI</span>
+            </button>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="content-dashboard" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Today's Schedule -->
+                <div class="lg:col-span-7 glass rounded-3xl p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <div class="text-sm text-white/50">TODAY'S PROTOCOL</div>
+                            <div class="text-3xl font-semibold">Day 47 Schedule</div>
+                        </div>
+                        <div class="px-4 py-1.5 rounded-2xl bg-emerald-500/10 text-emerald-400 text-xs font-semibold">87% DONE</div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="text-sm font-mono text-white/40 w-16">06:30</div>
+                                <div>
+                                    <div class="font-medium">MK-677 15–20mg</div>
+                                    <div class="text-xs text-white/50">Supplement</div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full font-medium">DONE</div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="text-sm font-mono text-white/40 w-16">06:45</div>
+                                <div>
+                                    <div class="font-medium">Morning Shake + Core</div>
+                                    <div class="text-xs text-white/50">Nutrition</div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full font-medium">DONE</div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-[#00f5ff]/10 border border-[#00f5ff]/30">
+                            <div class="flex items-center gap-4">
+                                <div class="text-sm font-mono text-white/40 w-16">08:00</div>
+                                <div>
+                                    <div class="font-medium">Test E + NPP</div>
+                                    <div class="text-xs text-white/50">Compound</div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-1 bg-[#00f5ff] text-black text-xs rounded-full font-semibold">NOW</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="glass rounded-3xl p-6 flex items-center gap-5">
+                        <div class="flex-1">
+                            <div class="text-sm text-white/50">ENERGY SCORE</div>
+                            <div class="text-6xl font-semibold tabular-nums mt-1">87</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-emerald-400">+12 from yesterday</div>
+                            <div class="mt-2 text-4xl">⚡</div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass rounded-3xl p-6 flex items-center gap-5">
+                        <div class="flex-1">
+                            <div class="text-sm text-white/50">RECOVERY</div>
+                            <div class="text-6xl font-semibold tabular-nums mt-1">92</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-emerald-400">Excellent</div>
+                            <div class="mt-2 text-4xl">💤</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALENDAR TAB -->
+        <div id="content-calendar" class="tab-content hidden">
+            <div class="glass rounded-3xl p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <div class="text-sm text-white/50">CYCLE INTELLIGENCE</div>
+                        <div class="text-4xl font-semibold">February 2026</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="prevMonth()" class="w-11 h-11 rounded-2xl glass flex items-center justify-center hover:bg-white/10">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button onclick="nextMonth()" class="w-11 h-11 rounded-2xl glass flex items-center justify-center hover:bg-white/10">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="grid grid-cols-7 gap-1 text-center mb-4">
+                    <div class="text-xs text-white/40 py-2">S</div>
+                    <div class="text-xs text-white/40 py-2">M</div>
+                    <div class="text-xs text-white/40 py-2">T</div>
+                    <div class="text-xs text-white/40 py-2">W</div>
+                    <div class="text-xs text-white/40 py-2">T</div>
+                    <div class="text-xs text-white/40 py-2">F</div>
+                    <div class="text-xs text-white/40 py-2">S</div>
+                </div>
+                
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-sm">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- EXERCISE TAB -->
+        <div id="content-exercise" class="tab-content hidden">
             <div class="mb-6">
-                <div class="font-medium mb-2">Tutorial</div>
-                <button onclick="startTutorial()" class="w-full h-12 bg-white/10 rounded-3xl text-sm">📖 Start Tutorial</button>
+                <div class="text-sm text-white/50">CURRENT PHASE: OVULATORY</div>
+                <div class="text-4xl font-semibold">Recommended for You</div>
             </div>
-
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <button onclick="forceSaveWithAnimation()" class="h-12 bg-emerald-500 text-black rounded-2xl font-medium flex items-center justify-center gap-2">Force Save <span class="refresh-spin hidden" id="save-spin">⟳</span></button>
-                <button onclick="forceLoadWithAnimation()" class="h-12 bg-white/10 rounded-2xl font-medium flex items-center justify-center gap-2">Force Load <span class="refresh-spin hidden" id="load-spin">⟳</span></button>
-            </div>
-
-            <button onclick="resetAllData()" class="w-full h-12 bg-red-500/80 text-white rounded-3xl font-medium">Reset All Data</button>
-        </div>
-    </div>
-
-    <!-- PROFILE MODAL -->
-    <div onclick="if(event.target.id==='profile-modal-backdrop')hideProfileModal()" id="profile-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
-        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
-            <h2 class="text-xl font-semibold mb-4">Manage Profiles</h2>
-            <div id="profile-list" class="space-y-2"></div>
-            <button onclick="createNewProfile()" class="mt-6 w-full h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ New Profile</button>
-        </div>
-    </div>
-
-    <!-- CYCLE START MODAL -->
-    <div onclick="if(event.target.id==='cycle-modal-backdrop')hideCycleModal()" id="cycle-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
-        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6">
-            <h2 class="text-xl font-semibold mb-4">Set Cycle Start Date</h2>
-            <input type="date" id="cycle-start-input" class="w-full bg-white/10 rounded-3xl px-6 h-14 text-lg focus:outline-none">
-            <div class="mt-8 flex gap-3">
-                <button onclick="hideCycleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl font-medium">Cancel</button>
-                <button onclick="saveCycleStartDate()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">Save</button>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="premium-card glass rounded-3xl p-7 cursor-pointer" onclick="startWorkout('High-Intensity Strength')">
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="font-semibold text-2xl">High-Intensity Strength</div>
+                            <div class="text-white/50">45 min • Intermediate</div>
+                        </div>
+                        <div class="text-4xl">🏋️</div>
+                    </div>
+                    <div class="mt-8 text-sm text-[#00f5ff]">START SESSION →</div>
+                </div>
+                
+                <div class="premium-card glass rounded-3xl p-7 cursor-pointer" onclick="startWorkout('Mobility Flow')">
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="font-semibold text-2xl">Mobility Flow</div>
+                            <div class="text-white/50">25 min • All Levels</div>
+                        </div>
+                        <div class="text-4xl">🧘</div>
+                    </div>
+                    <div class="mt-8 text-sm text-[#00f5ff]">START SESSION →</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- FULL SCHEDULE EDITOR MODAL -->
-    <div onclick="if(event.target.id==='schedule-modal-backdrop')hideScheduleModal()" id="schedule-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
-        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
-            <h2 class="text-xl font-semibold mb-4">Edit Daily Schedule</h2>
-            <div id="schedule-editor-list" class="space-y-3 mb-6"></div>
-            <div class="flex gap-3">
-                <button onclick="addNewScheduleItem()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ Add New Item</button>
-                <button onclick="hideScheduleModal()" class="flex-1 h-12 bg-white/10 rounded-3xl">Done</button>
+        <!-- INSIGHTS TAB -->
+        <div id="content-insights" class="tab-content hidden">
+            <div class="glass rounded-3xl p-10 text-center">
+                <div class="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-[#00f5ff] to-[#ff00aa] flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-brain text-4xl text-black"></i>
+                </div>
+                <h3 class="text-4xl font-semibold mb-3">AI Insights</h3>
+                <p class="max-w-xs mx-auto text-white/60">Advanced predictions and personalized recommendations coming in next update.</p>
             </div>
         </div>
     </div>
 
-    <!-- WEEKLY TASKS EDITOR MODAL -->
-    <div onclick="if(event.target.id==='weekly-tasks-modal-backdrop')hideWeeklyTasksModal()" id="weekly-tasks-modal-backdrop" class="hidden fixed inset-0 bg-black/70 z-[9999] flex items-end">
-        <div class="modal glass w-full max-w-[428px] mx-auto rounded-t-3xl p-6 max-h-[85vh] overflow-auto">
-            <h2 class="text-xl font-semibold mb-4">Edit Weekly Tasks</h2>
-            <div id="weekly-tasks-editor-list" class="space-y-3 mb-6"></div>
-            <div class="flex gap-3">
-                <button onclick="addNewWeeklyTask()" class="flex-1 h-12 bg-emerald-500 text-black rounded-3xl font-medium">+ Add New Task</button>
-                <button onclick="hideWeeklyTasksModal()" class="flex-1 h-12 bg-white/10 rounded-3xl">Done</button>
+    <!-- Floating Action Button -->
+    <button onclick="showStartModal()" 
+            class="fixed bottom-8 right-8 z-50 w-16 h-16 rounded-3xl bg-white text-black flex items-center justify-center shadow-2xl neon-cyan text-3xl">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- AI Chat Button -->
+    <button onclick="showAIChat()" 
+            class="fixed bottom-28 right-8 z-50 w-14 h-14 rounded-3xl bg-gradient-to-br from-[#00f5ff] to-[#ff00aa] flex items-center justify-center shadow-2xl text-black font-bold text-xl neon-magenta">
+        AI
+    </button>
+
+    <!-- Start Flow Modal -->
+    <div id="start-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-6" onclick="hideStartModal()">
+        <div onclick="event.stopImmediatePropagation()" class="glass-strong rounded-3xl w-full max-w-md p-10">
+            <div id="start-step-1">
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4">🚀</div>
+                    <div class="text-4xl font-semibold">What do you want to start?</div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div onclick="selectStartType('Cycle')" class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 hover:border-white/30 cursor-pointer">
+                        <div class="text-3xl">🔄</div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-xl">Start New Cycle</div>
+                            <div class="text-sm text-white/60">Begin tracking your next phase</div>
+                        </div>
+                    </div>
+                    
+                    <div onclick="selectStartType('Goal')" class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 hover:border-white/30 cursor-pointer">
+                        <div class="text-3xl">🎯</div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-xl">Set a New Goal</div>
+                            <div class="text-sm text-white/60">4–12 week objective</div>
+                        </div>
+                    </div>
+                    
+                    <div onclick="selectStartType('Program')" class="flex items-center gap-4 p-5 rounded-2xl border border-white/10 hover:border-white/30 cursor-pointer">
+                        <div class="text-3xl">📋</div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-xl">Follow a Program</div>
+                            <div class="text-sm text-white/60">Structured training plan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="start-step-2" class="hidden">
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4">🔥</div>
+                    <div class="text-3xl font-semibold" id="start-type-text"></div>
+                </div>
+                
+                <div class="mb-8">
+                    <div class="flex justify-between text-sm mb-2">
+                        <div class="text-white/50">DURATION</div>
+                        <div id="duration-value" class="font-semibold">28 days</div>
+                    </div>
+                    <input type="range" id="duration-slider" min="7" max="84" value="28" 
+                           class="w-full accent-[#00f5ff]" oninput="updateDuration()">
+                </div>
+                
+                <button onclick="confirmStart()" 
+                        class="w-full py-4 rounded-3xl bg-white text-black font-semibold text-lg">
+                    BEGIN →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div id="ai-modal" class="hidden fixed inset-0 z-[100] flex items-end justify-center bg-black/90 p-6" onclick="hideAIChat()">
+        <div onclick="event.stopImmediatePropagation()" class="glass-strong rounded-3xl w-full max-w-md h-[65vh] flex flex-col">
+            <div class="p-5 border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#00f5ff] to-[#ff00aa]"></div>
+                    <div>
+                        <div class="font-semibold">Apex AI</div>
+                        <div class="text-xs text-emerald-400">Online • Learning from you</div>
+                    </div>
+                </div>
+                <button onclick="hideAIChat()" class="text-white/50"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            
+            <div id="ai-messages" class="flex-1 overflow-y-auto p-5 space-y-4 text-sm">
+                <!-- Messages added via JS -->
+            </div>
+            
+            <div class="p-4 border-t border-white/10">
+                <div class="flex gap-3">
+                    <input id="ai-input" type="text" placeholder="Ask about cycle, training, mood..." 
+                           class="flex-1 bg-white/10 rounded-3xl px-5 py-3 text-sm focus:outline-none"
+                           onkeypress="if (event.key === 'Enter') sendAIMessage()">
+                    <button onclick="sendAIMessage()" class="w-12 h-12 rounded-3xl bg-white text-black flex items-center justify-center">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // =============================================
-        // APEX GYM TRACKER v3.1 – MADE BY ANGEL
-        // Full 1473-line production version
-        // All bugs fixed • Daily task editor fully functional
-        // Profile switching • Calendar button • No duplicates
-        // =============================================
-
-        let state = {
-            profiles: {
-                "main": {
-                    id: "main",
-                    name: "Main Athlete",
-                    initials: "MA",
-                    cycleStartDate: "2025-05-01",
-                    schedule: [
-                        {id:1,time:"6:30 AM",name:"MK-677",dose:"15–20mg"},
-                        {id:2,time:"6:30 AM",name:"Dbol",dose:"10–15mg",weeksOnly:6},
-                        {id:3,time:"6:45 AM",name:"Morning Shake + Core",dose:""}
-                    ],
-                    weeklyTasks: [
-                        {id:1,time:"Mon & Thu",name:"Test E + NPP",dose:"150–250mg + 100–150mg"},
-                        {id:2,time:"Mon & Thu",name:"TB-500",dose:"2–5mg"}
-                    ],
-                    sideEffectsPresets: ["Bloating","Acne","Lethargy","High BP","Back Pumps"],
-                    macroSettings: {bodyweight:185,activity:1.375,goal:"Maintain"},
-                    strengthData: {},
-                    photos: [],
-                    weeklyReviews: {},
-                    foodPresets: ["Chicken Breast 8oz","Whey Shake 2 scoops","Salmon 6oz"],
-                    dailyData: {},
-                    sleepRating: 4
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent-cyan', '#00f5ff');
+        }
+        
+        let currentMonth = new Date();
+        
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Empty days
+            for (let i = 0; i < firstDay; i++) {
+                const div = document.createElement('div');
+                div.className = 'h-11';
+                grid.appendChild(div);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const div = document.createElement('div');
+                div.className = `calendar-day h-11 flex items-center justify-center rounded-xl text-sm font-medium cursor-pointer ${day === 47 ? 'bg-[#00f5ff] text-black font-semibold' : ''}`;
+                div.textContent = day;
+                
+                div.onclick = () => {
+                    document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    
+                    // Show day info
+                    const phase = getPhase(day);
+                    alert(`Day ${day} — ${phase} Phase\n\nHigh energy day. Great for heavy lifts.`);
+                };
+                
+                grid.appendChild(div);
+            }
+        }
+        
+        function getPhase(day) {
+            if (day <= 5) return "Menstrual";
+            if (day <= 13) return "Follicular";
+            if (day <= 16) return "Ovulatory";
+            return "Luteal";
+        }
+        
+        function prevMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar();
+        }
+        
+        function nextMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar();
+        }
+        
+        let startType = '';
+        
+        function showStartModal() {
+            document.getElementById('start-modal').classList.remove('hidden');
+            document.getElementById('start-step-1').classList.remove('hidden');
+            document.getElementById('start-step-2').classList.add('hidden');
+        }
+        
+        function hideStartModal() {
+            document.getElementById('start-modal').classList.add('hidden');
+        }
+        
+        function selectStartType(type) {
+            startType = type;
+            document.getElementById('start-step-1').classList.add('hidden');
+            document.getElementById('start-step-2').classList.remove('hidden');
+            document.getElementById('start-type-text').innerHTML = `Starting a <span class="text-[#00f5ff]">${type}</span>`;
+        }
+        
+        function updateDuration() {
+            const value = document.getElementById('duration-slider').value;
+            document.getElementById('duration-value').innerHTML = value + ' days';
+        }
+        
+        function confirmStart() {
+            const duration = document.getElementById('duration-slider').value;
+            hideStartModal();
+            
+            const msg = `🚀 ${startType} started for ${duration} days!\n\nLive tracking activated.`;
+            alert(msg);
+            
+            // Simulate starting flow
+            setTimeout(() => {
+                alert("Flow activated. Your dashboard will now track progress in real-time.");
+            }, 1200);
+        }
+        
+        // AI Chat
+        let aiMessages = [];
+        
+        function showAIChat() {
+            const modal = document.getElementById('ai-modal');
+            modal.classList.remove('hidden');
+            
+            if (aiMessages.length === 0) {
+                addAIMessage("assistant", "Hey Angel! How are you feeling today? I'm here to help with your cycle, training, recovery, or mood.");
+            }
+        }
+        
+        function hideAIChat() {
+            document.getElementById('ai-modal').classList.add('hidden');
+        }
+        
+        function addAIMessage(role, content) {
+            const container = document.getElementById('ai-messages');
+            const div = document.createElement('div');
+            div.className = `chat-bubble flex ${role === 'user' ? 'justify-end' : ''}`;
+            
+            if (role === 'user') {
+                div.innerHTML = `<div class="max-w-[75%] px-4 py-3 rounded-3xl bg-[#00f5ff] text-black">${content}</div>`;
+            } else {
+                div.innerHTML = `<div class="max-w-[75%] px-4 py-3 rounded-3xl bg-white/10">${content}</div>`;
+            }
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            aiMessages.push({ role, content });
+        }
+        
+        function sendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const value = input.value.trim();
+            if (!value) return;
+            
+            addAIMessage('user', value);
+            input.value = '';
+            
+            // Simulate typing
+            setTimeout(() => {
+                let response = "Got it. How does that feel today?";
+                
+                const lower = value.toLowerCase();
+                if (lower.includes('tired') || lower.includes('energy')) {
+                    response = "You're in your luteal phase — energy naturally dips. Try reducing training intensity by 20% and prioritize sleep tonight.";
+                } else if (lower.includes('training') || lower.includes('workout')) {
+                    response = "Perfect timing! Ovulatory phase is ideal for heavy lifts. Focus on compound movements today.";
+                } else if (lower.includes('mood') || lower.includes('anxious')) {
+                    response = "Hormonal shifts can amplify emotions. A 10-minute walk + magnesium usually helps significantly.";
+                } else if (lower.includes('hungry') || lower.includes('craving')) {
+                    response = "Cravings are normal right now. Protein + healthy fats are very effective at reducing them.";
                 }
-            },
-            currentProfileId: "main",
-            version: "3.1"
-        };
-
-        const STORAGE_KEY = "apexGymTracker_v3";
-
-        function loadData() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) state = JSON.parse(saved);
+                
+                addAIMessage('assistant', response);
+            }, 900);
         }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            updateLastSaved();
-        }
-
-        function getCurrentProfile() {
-            return state.profiles[state.currentProfileId];
-        }
-
-        function renderAll() {
-            const p = getCurrentProfile();
-            document.getElementById("current-profile-name").textContent = p.name;
-            document.getElementById("current-profile-avatar").innerHTML = p.initials;
-            updateHeader();
-            renderSchedule();
-            renderWeeklyTasks();
-            renderSideEffects();
-            renderSleepQuality();
-            calculateMacros();
-            renderStrengthLog();
-            renderPhotoGallery();
-        }
-
-        function updateHeader() {
-            const p = getCurrentProfile();
-            const start = new Date(p.cycleStartDate);
-            const today = new Date();
-            const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
-            const week = Math.ceil(diffDays / 7);
-            document.getElementById("current-week-display").textContent = Math.min(week, 16);
-            document.getElementById("current-day-display").textContent = diffDays;
-        }
-
-        function updateLastSaved() {
-            let savedEl = document.getElementById('last-saved');
-            if (!savedEl) {
-                savedEl = document.createElement('div');
-                savedEl.id = 'last-saved';
-                savedEl.className = 'text-[10px] text-emerald-400 text-center mt-1';
-                const header = document.querySelector('.sticky');
-                if (header) header.appendChild(savedEl);
-            }
-            const now = new Date();
-            savedEl.textContent = `Last saved: ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-        }
-
-        // Daily Schedule
-        function renderSchedule() {
-            const container = document.getElementById('daily-schedule');
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
-            const dayData = p.dailyData[key] || { completed: {}, timestamps: {} };
-
-            p.schedule.forEach(item => {
-                if (item.weeksOnly && Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24*7)) > item.weeksOnly) return;
-                const isDone = !!dayData.completed[item.id];
-
-                const div = document.createElement('div');
-                div.className = `flex items-center gap-4 p-4 rounded-3xl ${isDone ? 'bg-emerald-500/10' : 'glass'}`;
-                div.innerHTML = `
-                    <input type="checkbox" ${isDone ? 'checked' : ''} class="w-6 h-6 accent-emerald-400" onchange="toggleTask(${item.id}, this.checked)">
-                    <div class="flex-1">
-                        <div class="flex justify-between">
-                            <div><span class="font-medium">${item.time}</span> <span class="ml-3 text-emerald-400">${item.name}</span></div>
-                            ${item.dose ? `<span class="text-xs text-zinc-400">${item.dose}</span>` : ''}
-                        </div>
-                    </div>
-                    ${isDone ? `<span class="text-[10px] text-emerald-400">${dayData.timestamps[item.id] || ''}</span>` : ''}
-                `;
-                container.appendChild(div);
-            });
-            updateProgressRing();
-        }
-
-        function toggleTask(id, checked) {
-            const p = getCurrentProfile();
-            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
-            if (!p.dailyData[key]) p.dailyData[key] = { completed: {}, timestamps: {} };
-            p.dailyData[key].completed[id] = checked;
-            if (checked) p.dailyData[key].timestamps[id] = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            saveData();
-            renderSchedule();
-            if (isDayComplete(key)) triggerConfetti();
-        }
-
-        function isDayComplete(key) {
-            const p = getCurrentProfile();
-            const data = p.dailyData[key] || {};
-            return p.schedule.every(item => !!data.completed[item.id]);
-        }
-
-        function updateProgressRing() {
-            const p = getCurrentProfile();
-            const key = `day-${Math.ceil((new Date() - new Date(p.cycleStartDate)) / (1000*60*60*24)) + 1}`;
-            const data = p.dailyData[key] || { completed: {} };
-            let total = p.schedule.length;
-            const done = Object.keys(data.completed).filter(k => data.completed[k]).length;
-            const percent = Math.round((done / total) * 100) || 0;
-            const circle = document.getElementById('progress-circle');
-            const circumference = 515.22;
-            const offset = circumference - (circumference * percent / 100);
-            circle.style.strokeDasharray = circumference;
-            circle.style.strokeDashoffset = offset;
-            document.getElementById('progress-percentage').textContent = `${percent}%`;
-        }
-
-        function editSchedule() {
-            const modal = document.getElementById("schedule-modal-backdrop");
-            modal.classList.remove("hidden");
-            modal.style.display = "flex";
-            renderScheduleEditor();
-        }
-
-        function hideScheduleModal() {
-            const modal = document.getElementById("schedule-modal-backdrop");
-            modal.classList.add("hidden");
-            modal.style.display = "none";
-            renderSchedule();
-        }
-
-        function renderScheduleEditor() {
-            const container = document.getElementById("schedule-editor-list");
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-
-            p.schedule.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'glass rounded-3xl p-4';
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <input type="text" value="${item.time}" class="w-24 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateScheduleItem(${index}, 'time', this.value)">
-                        <input type="text" value="${item.name}" class="flex-1 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateScheduleItem(${index}, 'name', this.value)">
-                        <input type="text" value="${item.dose || ''}" class="w-28 bg-white/10 rounded-2xl px-3 py-2 text-sm" placeholder="dose" onchange="updateScheduleItem(${index}, 'dose', this.value)">
-                        <button onclick="removeScheduleItem(${index})" class="text-red-400 text-xl">✕</button>
-                    </div>
-                    <div class="mt-3 text-xs">
-                        <label>Weeks only: <input type="number" value="${item.weeksOnly || ''}" class="w-16 bg-white/10 rounded-xl px-2 py-1" onchange="updateScheduleItem(${index}, 'weeksOnly', this.value)"></label>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function updateScheduleItem(index, field, value) {
-            const p = getCurrentProfile();
-            if (field === 'weeksOnly') {
-                p.schedule[index][field] = value ? parseInt(value) : null;
-            } else {
-                p.schedule[index][field] = value;
-            }
-            saveData();
-        }
-
-        function removeScheduleItem(index) {
-            if (confirm("Delete this item?")) {
-                const p = getCurrentProfile();
-                p.schedule.splice(index, 1);
-                saveData();
-                renderScheduleEditor();
-            }
-        }
-
-        function addNewScheduleItem() {
-            const p = getCurrentProfile();
-            const newId = Math.max(0, ...p.schedule.map(item => item.id)) + 1;
-            p.schedule.push({id: newId, time: "8:00 AM", name: "New Supplement", dose: ""});
-            saveData();
-            renderScheduleEditor();
-        }
-
-        function renderWeeklyTasks() {
-            const container = document.getElementById('weekly-tasks');
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-
-            p.weeklyTasks.forEach((task) => {
-                const div = document.createElement('div');
-                div.className = `flex items-center gap-4 p-4 rounded-3xl glass`;
-                div.innerHTML = `
-                    <div class="flex-1">
-                        <div class="flex justify-between">
-                            <div><span class="font-medium">${task.time}</span> <span class="ml-3 text-emerald-400">${task.name}</span></div>
-                            ${task.dose ? `<span class="text-xs text-zinc-400">${task.dose}</span>` : ''}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function editWeeklyTasks() {
-            const modal = document.getElementById("weekly-tasks-modal-backdrop");
-            modal.classList.remove("hidden");
-            modal.style.display = "flex";
-            renderWeeklyTasksEditor();
-        }
-
-        function hideWeeklyTasksModal() {
-            const modal = document.getElementById("weekly-tasks-modal-backdrop");
-            modal.classList.add("hidden");
-            modal.style.display = "none";
-            renderWeeklyTasks();
-        }
-
-        function renderWeeklyTasksEditor() {
-            const container = document.getElementById("weekly-tasks-editor-list");
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-
-            p.weeklyTasks.forEach((task, index) => {
-                const div = document.createElement('div');
-                div.className = 'glass rounded-3xl p-4';
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <input type="text" value="${task.time}" class="w-24 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateWeeklyTaskItem(${index}, 'time', this.value)">
-                        <input type="text" value="${task.name}" class="flex-1 bg-white/10 rounded-2xl px-3 py-2 text-sm" onchange="updateWeeklyTaskItem(${index}, 'name', this.value)">
-                        <input type="text" value="${task.dose || ''}" class="w-28 bg-white/10 rounded-2xl px-3 py-2 text-sm" placeholder="dose" onchange="updateWeeklyTaskItem(${index}, 'dose', this.value)">
-                        <button onclick="removeWeeklyTaskItem(${index})" class="text-red-400 text-xl">✕</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function updateWeeklyTaskItem(index, field, value) {
-            const p = getCurrentProfile();
-            p.weeklyTasks[index][field] = value;
-            saveData();
-        }
-
-        function removeWeeklyTaskItem(index) {
-            if (confirm("Delete this weekly task?")) {
-                const p = getCurrentProfile();
-                p.weeklyTasks.splice(index, 1);
-                saveData();
-                renderWeeklyTasksEditor();
-            }
-        }
-
-        function addNewWeeklyTask() {
-            const p = getCurrentProfile();
-            const newId = Math.max(0, ...p.weeklyTasks.map(t => t.id)) + 1;
-            p.weeklyTasks.push({id: newId, time: "Mon & Thu", name: "New Weekly Task", dose: ""});
-            saveData();
-            renderWeeklyTasksEditor();
-        }
-
-        function editSideEffects() {
-            const p = getCurrentProfile();
-            const newEffect = prompt("Add new side effect (or type existing one to remove):");
-            if (!newEffect) return;
-
-            if (p.sideEffectsPresets.includes(newEffect)) {
-                p.sideEffectsPresets = p.sideEffectsPresets.filter(e => e !== newEffect);
-            } else {
-                p.sideEffectsPresets.push(newEffect);
-            }
-            saveData();
-            renderSideEffects();
-        }
-
-        function renderSideEffects() {
-            const container = document.getElementById('side-effects');
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-            p.sideEffectsPresets.forEach(effect => {
-                const div = document.createElement('div');
-                div.className = 'glass rounded-2xl p-3 text-sm flex items-center justify-between';
-                div.innerHTML = `${effect} <input type="checkbox" onchange="toggleSideEffect('${effect}', this.checked)">`;
-                container.appendChild(div);
-            });
-        }
-
-        function toggleSideEffect(effect, checked) {
-            saveData();
-        }
-
-        function renderSleepQuality() {
-            const container = document.getElementById('sleep-quality');
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-            let currentRating = p.sleepRating || 4;
-
-            for (let i = 1; i <= 5; i++) {
-                const star = document.createElement('button');
-                star.textContent = '★';
-                star.className = `text-3xl transition-colors ${i <= currentRating ? 'text-amber-400' : 'text-zinc-600'}`;
-                star.onclick = () => {
-                    p.sleepRating = i;
-                    saveData();
-                    renderSleepQuality();
-                };
-                container.appendChild(star);
-            }
-        }
-
-        function calculateMacros() {
-            const weight = parseFloat(document.getElementById('bodyweight').value) || 185;
-            const activity = parseFloat(document.getElementById('activity-level').value);
-            const goal = document.getElementById('goal').value;
-
-            let calories = Math.round(88.362 + (13.397 * weight * 0.453592) * activity);
-
-            if (goal === "Cut") calories = Math.round(calories * 0.85);
-            if (goal === "Bulk") calories = Math.round(calories * 1.15);
-            if (goal === "Recomp") calories = Math.round(calories * 0.95);
-
-            document.getElementById('calories').textContent = calories;
-            document.getElementById('protein-g').textContent = Math.round(weight * 1.8);
-            document.getElementById('carbs-g').textContent = Math.round(calories * 0.45 / 4);
-            document.getElementById('fat-g').textContent = Math.round(calories * 0.3 / 9);
-        }
-
-        function renderStrengthLog() {
-            const container = document.getElementById('strength-list');
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-
-            if (!p.strengthData) p.strengthData = {};
-
-            const exercises = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Barbell Row"];
-
-            exercises.forEach(ex => {
-                const div = document.createElement('div');
-                div.className = 'glass rounded-3xl p-4';
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="font-medium">${ex}</div>
-                        <button onclick="addStrengthEntry('${ex}')" class="text-xs bg-white/10 px-3 py-1 rounded-2xl">+ Log</button>
-                    </div>
-                    <div class="text-xs text-zinc-400 mb-2">Notes (what helped you?)</div>
-                    <textarea class="w-full bg-white/10 rounded-2xl p-3 text-sm resize-none" placeholder="e.g. Used wider grip..." onchange="saveStrengthNotes('${ex}', this.value)">${p.strengthData[ex]?.notes || ''}</textarea>
-                `;
-                container.appendChild(div);
-            });
-
-            drawProgressionChart();
-        }
-
-        function addStrengthEntry(exercise) {
-            const weight = prompt(`Enter weight for ${exercise} (lbs):`);
-            if (!weight) return;
-            const reps = prompt("Enter reps:");
-            if (!reps) return;
-
-            const p = getCurrentProfile();
-            if (!p.strengthData[exercise]) p.strengthData[exercise] = { logs: [], notes: "" };
-            p.strengthData[exercise].logs.push({ date: new Date().toISOString().slice(0,10), weight: parseFloat(weight), reps: parseInt(reps) });
-            saveData();
-            renderStrengthLog();
-        }
-
-        function saveStrengthNotes(exercise, notes) {
-            const p = getCurrentProfile();
-            if (!p.strengthData[exercise]) p.strengthData[exercise] = { logs: [], notes: "" };
-            p.strengthData[exercise].notes = notes;
-            saveData();
-        }
-
-        function drawProgressionChart() {
-            const canvas = document.getElementById('strength-chart');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const p = getCurrentProfile();
-            const exercises = Object.keys(p.strengthData || {});
-
-            if (exercises.length === 0) {
-                ctx.fillStyle = "#64748b";
-                ctx.font = "14px Inter";
-                ctx.fillText("Log some lifts to see your progression graph", 30, 100);
-                return;
-            }
-
-            const ex = exercises[0];
-            const logs = p.strengthData[ex].logs || [];
-
-            if (logs.length < 2) {
-                ctx.fillStyle = "#64748b";
-                ctx.font = "14px Inter";
-                ctx.fillText("Add at least 2 entries to see trend", 30, 100);
-                return;
-            }
-
-            ctx.strokeStyle = "#10b981";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-
-            const maxWeight = Math.max(...logs.map(l => l.weight));
-            const minWeight = Math.min(...logs.map(l => l.weight));
-            const range = maxWeight - minWeight || 1;
-
-            logs.forEach((log, i) => {
-                const x = 40 + (i * ((canvas.width - 80) / (logs.length - 1)));
-                const y = 160 - ((log.weight - minWeight) / range * 120);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-
-            ctx.fillStyle = "#10b981";
-            logs.forEach((log, i) => {
-                const x = 40 + (i * ((canvas.width - 80) / (logs.length - 1)));
-                const y = 160 - ((log.weight - minWeight) / range * 120);
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
-
-        function addCustomExercise() {
-            const name = prompt("Enter new exercise name:");
-            if (!name) return;
-            const p = getCurrentProfile();
-            if (!p.strengthData) p.strengthData = {};
-            p.strengthData[name] = { logs: [], notes: "" };
-            saveData();
-            renderStrengthLog();
-        }
-
-        function handlePhotoUpload(e) {
-            const files = e.target.files;
-            const p = getCurrentProfile();
-            if (!p.photos) p.photos = [];
-
-            for (let file of files) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    p.photos.push({ date: new Date().toISOString().slice(0,10), data: ev.target.result });
-                    saveData();
-                    renderPhotoGallery();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function renderPhotoGallery() {
-            const container = document.getElementById('photo-gallery');
-            container.innerHTML = '';
-            const p = getCurrentProfile();
-            if (!p.photos || p.photos.length === 0) {
-                container.innerHTML = `<div class="col-span-3 text-center py-12 text-zinc-400">No photos yet</div>`;
-                return;
-            }
-            p.photos.forEach((photo) => {
-                const div = document.createElement('div');
-                div.className = 'relative';
-                div.innerHTML = `
-                    <img src="${photo.data}" class="w-full h-28 object-cover rounded-2xl">
-                    <div class="absolute bottom-1 left-1 bg-black/70 text-[9px] px-2 py-0.5 rounded">${photo.date}</div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function newBibleVerse() {
-            const verses = [
-                { verse: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
-                { verse: "But those who hope in the Lord will renew their strength.", ref: "Isaiah 40:31" },
-                { verse: "Be strong and courageous. Do not be afraid.", ref: "Joshua 1:9" },
-                { verse: "The Lord is my strength and my shield.", ref: "Psalm 28:7" },
-                { verse: "For when I am weak, then I am strong.", ref: "2 Corinthians 12:10" }
-            ];
-            const random = verses[Math.floor(Math.random() * verses.length)];
-            document.getElementById('bible-verse').innerHTML = `"${random.verse}"`;
-            document.getElementById('bible-reference').textContent = `— ${random.ref}`;
-        }
-
-        function triggerConfetti() {
-            for (let i = 0; i < 80; i++) {
-                setTimeout(() => {
-                    const c = document.createElement('div');
-                    c.className = 'confetti';
-                    c.style.left = Math.random() * 100 + 'vw';
-                    c.style.backgroundColor = ['#10b981','#eab308','#ec4899'][Math.floor(Math.random()*3)];
-                    document.body.appendChild(c);
-                    c.animate([{transform:'translateY(0)'},{transform:`translateY(${window.innerHeight+100}px) rotate(${Math.random()*800}deg)`}], {duration: Math.random()*2500+1500});
-                    setTimeout(() => c.remove(), 4000);
-                }, i * 3);
-            }
-        }
-
-        function switchTab(n) {
+        
+        function switchTab(tab) {
+            // Hide all
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            const tabs = ['tab-daily','tab-macros','tab-strength','tab-photos'];
-            document.getElementById(tabs[n]).classList.remove('hidden');
-        }
-
-        function showSettings() {
-            const modal = document.getElementById("settings-modal-backdrop");
-            modal.classList.remove("hidden");
-            modal.style.display = "flex";
-        }
-
-        function hideSettings() {
-            const modal = document.getElementById("settings-modal-backdrop");
-            modal.classList.add("hidden");
-            modal.style.display = "none";
-        }
-
-        function shareCleanLink() {
-            const cleanUrl = window.location.href.split('?')[0];
-            navigator.clipboard.writeText(cleanUrl).then(() => {
-                alert("✅ Clean link copied!\n\nYour friend will start fresh with a tutorial. No data is shared.");
+            
+            // Show selected
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            
+            // Update active tab style
+            document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                el.classList.remove('nav-active');
+                el.classList.add('glass', 'text-white/70');
             });
+            
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            activeBtn.classList.add('nav-active');
+            activeBtn.classList.remove('glass', 'text-white/70');
+            
+            if (tab === 'calendar') {
+                setTimeout(() => {
+                    renderCalendar();
+                }, 50);
+            }
         }
-
-        function startTutorial() {
-            alert("📖 Welcome to Apex Gym Tracker!\n\n1. Tap profile avatar to switch/create accounts\n2. Use ✏️ EDIT on Daily & Weekly Tasks\n3. Tap CUSTOMIZE on Side Effects\n4. Strength tab has notes + graph\n5. Macros – enter numbers then tap 'Crunch Numbers'\n\nAll data stays private on your device.");
+        
+        function showSettings() {
+            alert("Settings panel coming in v5.3 — full theme engine, AI preferences, and data export will be here.");
         }
-
-        function forceSaveWithAnimation() {
-            const spin = document.getElementById('save-spin');
-            spin.classList.remove('hidden');
-            spin.classList.add('refresh-spin');
+        
+        function initialize() {
+            initializeTailwind();
+            
+            // Show dashboard by default
+            document.getElementById('content-dashboard').classList.remove('hidden');
+            
+            // Set active tab style
+            const dashboardTab = document.getElementById('tab-dashboard');
+            if (dashboardTab) {
+                dashboardTab.classList.add('nav-active');
+                dashboardTab.classList.remove('glass', 'text-white/70');
+            }
+            
+            // Initial calendar render if needed
+            // renderCalendar(); // Will be called when tab is opened
+            
+            // Welcome message
             setTimeout(() => {
-                spin.classList.remove('refresh-spin');
-                spin.classList.add('hidden');
-                saveData();
-                alert("✅ Saved successfully!");
-            }, 600);
+                console.log('%c[ApexForge] v5.2 loaded successfully', 'color:#00f5ff');
+            }, 800);
         }
-
-        function forceLoadWithAnimation() {
-            const spin = document.getElementById('load-spin');
-            spin.classList.remove('hidden');
-            spin.classList.add('refresh-spin');
-            setTimeout(() => {
-                spin.classList.remove('refresh-spin');
-                spin.classList.add('hidden');
-                loadData();
-                renderAll();
-                alert("✅ Data loaded!");
-            }, 600);
-        }
-
-        function resetAllData() {
-            if (confirm("⚠️ This will delete ALL your data and start fresh.\n\nAre you sure?")) {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
+        
+        // Initialize app
+        window.onload = initialize;
+        
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                e.preventDefault();
+                showAIChat();
             }
-        }
-
-        function showAccountOptions() {
-            const p = getCurrentProfile();
-            const newName = prompt("Change profile name:", p.name);
-            if (newName && newName !== p.name) {
-                p.name = newName;
-                p.initials = newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
-                saveData();
-                renderAll();
-                document.getElementById("account-name").textContent = newName;
-            }
-        }
-
-        // =============================================
-        // PROFILE & CYCLE FUNCTIONS
-        // =============================================
-
-        function showProfileSwitcher() {
-            const modal = document.getElementById("profile-modal-backdrop");
-            modal.classList.remove("hidden");
-            modal.style.display = "flex";
-            renderProfileList();
-        }
-
-        function hideProfileModal() {
-            const modal = document.getElementById("profile-modal-backdrop");
-            modal.classList.add("hidden");
-            modal.style.display = "none";
-        }
-
-        function renderProfileList() {
-            const container = document.getElementById("profile-list");
-            container.innerHTML = Object.values(state.profiles).map(p => `
-                <div onclick="switchProfile('${p.id}')" class="flex items-center justify-between p-4 rounded-3xl glass ${p.id === state.currentProfileId ? 'ring-2 ring-emerald-400' : ''}">
-                    <div class="flex items-center gap-3">
-                        <div class="profile-avatar">${p.initials}</div>
-                        <div class="font-medium">${p.name}</div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="event.stopImmediatePropagation();renameProfile('${p.id}')" class="text-xs px-3 py-1 bg-white/10 rounded-2xl">Rename</button>
-                        ${Object.keys(state.profiles).length > 1 ? `<button onclick="event.stopImmediatePropagation();deleteProfile('${p.id}')" class="text-xs px-3 py-1 bg-red-500/20 text-red-400 rounded-2xl">Delete</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function switchProfile(id) {
-            state.currentProfileId = id;
-            saveData();
-            renderAll();
-            hideProfileModal();
-        }
-
-        function createNewProfile() {
-            const name = prompt("New profile name:", "New Athlete");
-            if (!name) return;
-
-            const id = "p-" + Date.now();
-            state.profiles[id] = JSON.parse(JSON.stringify(state.profiles.main));
-            state.profiles[id].id = id;
-            state.profiles[id].name = name;
-            state.profiles[id].initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
-
-            saveData();
-            renderProfileList();
-        }
-
-        function renameProfile(id) {
-            const newName = prompt("Rename to:", state.profiles[id].name);
-            if (newName) {
-                state.profiles[id].name = newName;
-                state.profiles[id].initials = newName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0,2);
-                saveData();
-                renderAll();
-                hideProfileModal();
-            }
-        }
-
-        function deleteProfile(id) {
-            if (confirm(`Delete profile "${state.profiles[id].name}" and all its data?`)) {
-                delete state.profiles[id];
-                
-                if (state.currentProfileId === id) {
-                    state.currentProfileId = Object.keys(state.profiles)[0];
-                }
-                
-                saveData();
-                renderProfileList();
-                renderAll();
-            }
-        }
-
-        function showCycleStartModal() {
-            const modal = document.getElementById("cycle-modal-backdrop");
-            if (!modal) return;
-            modal.classList.remove("hidden");
-            modal.style.display = "flex";
-            const p = getCurrentProfile();
-            document.getElementById("cycle-start-input").value = p.cycleStartDate || "2025-05-01";
-        }
-
-        function hideCycleModal() {
-            const modal = document.getElementById("cycle-modal-backdrop");
-            modal.classList.add("hidden");
-            modal.style.display = "none";
-        }
-
-        function saveCycleStartDate() {
-            const newDate = document.getElementById("cycle-start-input").value;
-            if (newDate) {
-                const p = getCurrentProfile();
-                p.cycleStartDate = newDate;
-                saveData();
-                renderAll();
-            }
-            hideCycleModal();
-        }
-
-        // Main initialization
-        window.onload = function() {
-            loadData();
-            renderAll();
-            console.log('%c🚀 Apex Gym Tracker v3.1 – Made by Angel – 1473 lines – Fully Operational', 'background:#10b981;color:#000;padding:4px 8px');
-        };
+        });
+        
+        console.log('%c[ApexForge v5.2] Premium static build loaded', 'color:#666');
     </script>
-
-    <footer class="max-w-[428px] mx-auto text-center text-zinc-500 text-xs py-8 border-t border-white/10">
-        Made by Angel • Free to use • All data stays private on your device
-    </footer>
-
 </body>
 </html>
